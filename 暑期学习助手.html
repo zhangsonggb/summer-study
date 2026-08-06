@@ -1,0 +1,958 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>暑期学习助手 — 四升五</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#f5f0eb;color:#333;line-height:1.6;max-width:800px;margin:0 auto;padding:10px 12px 60px}
+.day-badge{text-align:center;padding:10px 0 4px;font-size:14px;color:#888}
+h1{text-align:center;font-size:21px;margin:0 0 10px;color:#c0392b}
+.phase-tag{display:inline-block;background:#c0392b;color:#fff;padding:2px 10px;border-radius:10px;font-size:12px;margin-left:6px;vertical-align:middle}
+
+.card{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.card h2{font-size:16px;border-bottom:2px solid #c0392b;padding-bottom:6px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+
+.tabs{display:flex;gap:4px;margin-bottom:10px;position:sticky;top:0;z-index:10;background:#f5f0eb;padding:8px 0;border-radius:12px}
+.tab{flex:1;text-align:center;padding:8px 2px;border-radius:20px;font-size:11px;font-weight:bold;border:2px solid #ddd;background:#fff;cursor:pointer;white-space:nowrap}
+.tab.active{background:#c0392b;color:#fff;border-color:#c0392b}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.step{background:#fef9f4;border:2px solid #e8d5c4;border-radius:10px;padding:8px;text-align:center}
+.step .num{display:inline-block;width:26px;height:26px;line-height:26px;border-radius:50%;background:#c0392b;color:#fff;font-weight:bold;font-size:13px;margin-bottom:2px}
+.step .title{font-weight:bold;font-size:14px;color:#c0392b}
+.step .action{font-size:12px;color:#666;line-height:1.3}
+.step .tool{display:inline-block;background:#ffeaa7;padding:1px 5px;border-radius:4px;font-size:10px;margin-top:2px}
+
+.check3 .row{display:flex;align-items:flex-start;gap:8px;background:#f0faf0;border-radius:8px;padding:7px 10px;margin-bottom:5px;font-size:14px}
+.check3 .row .q{font-weight:bold;color:#27ae60;min-width:65px;flex-shrink:0}
+
+.task-list{list-style:none}
+.task-list li{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px dashed #eee}
+.task-list li:last-child{border:none}
+.task-list .time{min-width:82px;font-size:13px;color:#c0392b;font-weight:bold;flex-shrink:0}
+.task-list .tc{flex:1;font-size:14px}
+.task-list .tsub{font-size:12px;color:#e67e22;display:block;margin-top:1px}
+.task-list input[type=checkbox]{width:20px;height:20px;accent-color:#c0392b;flex-shrink:0;margin-top:2px}
+
+.day-detail h3{font-size:16px;margin:12px 0 8px}
+.day-detail .time-block{margin:8px 0;padding:8px 10px;background:#fafaf5;border-left:3px solid #c0392b;border-radius:0 8px 8px 0}
+.day-detail .time-block .tl{font-weight:bold;color:#c0392b;font-size:13px}
+.day-detail .time-block .td{font-size:14px;margin-top:2px}
+.day-detail .time-block .tnote{font-size:12px;color:#e67e22;margin-top:1px}
+.day-detail .day-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.day-detail .day-btn{padding:6px 12px;border-radius:16px;border:2px solid #ddd;background:#fff;font-size:13px;cursor:pointer;white-space:nowrap}
+.day-detail .day-btn.active{background:#c0392b;color:#fff;border-color:#c0392b}
+.day-detail .night-box{background:#f8f4ff;border-radius:8px;padding:10px;margin-top:10px;font-size:13px}
+
+.focus-card{background:#fffbf0;border:2px solid #f39c12;border-radius:10px;padding:10px 12px;margin:8px 0}
+.focus-card .f-title{font-weight:bold;color:#e67e22;font-size:14px;margin-bottom:4px}
+.focus-card .f-item{font-size:13px;padding:3px 0;display:flex;align-items:flex-start;gap:6px}
+.focus-card .f-item .f-emoji{flex-shrink:0}
+
+.parent-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.parent-item{background:#f8f4ff;border-radius:8px;padding:10px;text-align:center}
+.parent-item .label{font-size:12px;color:#888}
+.parent-item .value{font-size:22px;font-weight:bold;color:#8e44ad}
+.parent-check{display:flex;align-items:center;gap:6px;padding:5px 0;font-size:14px}
+.parent-check input[type=checkbox]{width:18px;height:18px;accent-color:#8e44ad;flex-shrink:0}
+
+.sync-box{background:#e8f4fd;border:2px solid #3498db;border-radius:10px;padding:10px 12px;margin:8px 0}
+.sync-box .s-title{font-weight:bold;color:#2980b9;font-size:14px}
+
+.tip{background:#ffeaa7;border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0}
+.self-rate{display:flex;justify-content:space-around;font-size:26px;padding:4px 0}
+.self-rate span{cursor:pointer;transition:opacity 0.2s}
+.info-table{width:100%;font-size:13px;border-collapse:collapse;margin:6px 0}
+.info-table td,.info-table th{padding:6px 8px;border:1px solid #eee;text-align:left}
+.info-table th{background:#fef9f4;color:#c0392b}
+
+@media(max-width:480px){
+  .steps{grid-template-columns:1fr}
+  .parent-grid{grid-template-columns:1fr}
+  h1{font-size:18px}
+  .card{padding:10px 12px}
+}
+</style>
+</head>
+<body>
+
+<div class="day-badge" id="dayBadge"></div>
+<h1>📐 暑期学习助手 <span class="phase-tag" id="phaseTag"></span></h1>
+
+<!-- ========== 每日提醒 ========== -->
+<div class="card" style="background:#fffbf0;border:2px solid #f39c12;margin-bottom:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;font-size:13px">
+    <span>🧹<b>桌面</b>：只放教辅+铅笔+草稿纸</span>
+    <span>🚰<b>喝水+厕所</b>：开始后45分钟不走神</span>
+    <span>⏱️<b>计时25分钟</b></span>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;font-size:13px;margin-top:6px;padding-top:6px;border-top:1px dashed #f39c12">
+    <span>🔍<b>四步法</b>：圈数→圈词→写关系→回读</span>
+    <span>✅<b>自查</b>：数字？计算？单位？</span>
+    <span>📦<b>收尾</b>：收拾桌面再走</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('today')">📋任务</div>
+  <div class="tab" onclick="switchTab('focus')">🧠专注</div>
+  <div class="tab" onclick="switchTab('detail')">📖详情</div>
+  <div class="tab" onclick="switchTab('test')">📝小测</div>
+  <div class="tab" onclick="switchTab('check')">👨‍👦查验</div>
+  <div class="tab" onclick="switchTab('week')">🗓️周</div>
+  <div class="tab" onclick="switchTab('english')">🇬🇧补缺</div>
+</div>
+
+<!-- ==================== 1. 今日任务 ==================== -->
+<div class="tab-content active" id="tab-today">
+
+  <div class="card">
+    <h2>🔍 做题前 · 审题四步法</h2>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div class="title">圈数字</div><div class="action">铅笔圈出所有数字</div><div class="tool">✏️ 铅笔</div></div>
+      <div class="step"><div class="num">2</div><div class="title">圈关键词</div><div class="action">圈"一共""平均""比…多""每""剩下""不是"</div><div class="tool">✏️ 铅笔</div></div>
+      <div class="step"><div class="num">3</div><div class="title">写关系</div><div class="action">草稿纸写：加/减/乘/除？为什么？</div><div class="tool">📄 草稿纸</div></div>
+      <div class="step"><div class="num">4</div><div class="title">回读</div><div class="action">做完马上回头看题目</div><div class="tool">👀</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📐 做题后完整流程</h2>
+
+    <div style="font-size:14px">
+      <div class="row" style="background:#f0faf0;border-radius:8px;padding:10px;margin-bottom:6px">
+        <span class="q" style="font-weight:bold;color:#27ae60;min-width:75px">第1步：自查</span>
+        不看答案！用红笔逐题检查每道题。<br>
+        <span style="font-size:12px;color:#888">三问：数字抄对了吗？计算对了吗？单位写了吗？<br>草稿纸上每道大题旁红笔写<b>"已查✓"</b></span>
+      </div>
+
+      <div style="text-align:center;font-size:18px;color:#ccc;padding:2px 0">⬇️</div>
+
+      <div class="row" style="background:#fff8f0;border-radius:8px;padding:10px;margin-bottom:6px">
+        <span class="q" style="font-weight:bold;color:#e67e22;min-width:75px">第2步：对答案</span>
+        自己拿参考答案对照，对的打✓，错的先<b>不写正确答案</b>。<br>
+        <span style="font-size:12px;color:#888">用红笔把错题题号圈出来</span>
+      </div>
+
+      <div style="text-align:center;font-size:18px;color:#ccc;padding:2px 0">⬇️</div>
+
+      <div class="row" style="background:#ffe8e8;border-radius:8px;padding:10px;margin-bottom:6px">
+        <span class="q" style="font-weight:bold;color:#c0392b;min-width:75px">第3步：自己改</span>
+        <b>不抄答案！</b>错题重新读题→审题四步法→重做。<br>
+        <span style="font-size:12px;color:#888">如果能自己改对→🔴红色标签（粗心）<br>如果还是不会→🟡黄色标签，记录下来</span>
+      </div>
+
+      <div style="text-align:center;font-size:18px;color:#ccc;padding:2px 0">⬇️</div>
+
+      <div class="row" style="background:#f0f0ff;border-radius:8px;padding:10px">
+        <span class="q" style="font-weight:bold;color:#3498db;min-width:75px">第4步：看解析</span>
+        黄色标签的题→平板扫参考答案上的<b>视频解析二维码</b>。<br>
+        <span style="font-size:12px;color:#888">看完视频后把正确解法用一句话写下来</span>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top:10px">
+      💡 <b>关键规则：对答案前必须先自查！</b><br>
+      👨‍👦 <b>爸爸怎么查：</b>①草稿有"已查✓"吗？②自查发现的错和对答案发现的错数量各多少？如果自查发现0个但对答案发现好几个→自查不合格</div>
+  </div>
+
+  <div class="card">
+    <h2>📋 今日任务清单 <span id="todayDate"></span></h2>
+    <ul class="task-list" id="taskList"></ul>
+  </div>
+
+  <div class="card">
+    <h2>🌟 今日自查自改记录</h2>
+    <div style="font-size:14px">
+      <div style="display:flex;justify-content:space-around;text-align:center;padding:8px 0">
+        <div>
+          <div style="font-size:12px;color:#888">自查发现了几个错？</div>
+          <input type="number" id="selfFound" value="0" min="0" max="20" style="width:45px;text-align:center;border:1px solid #ddd;border-radius:4px;padding:2px;font-size:18px"> 个
+        </div>
+        <div>
+          <div style="font-size:12px;color:#888">对答案又发现几个？</div>
+          <input type="number" id="answerFound" value="0" min="0" max="20" style="width:45px;text-align:center;border:1px solid #ddd;border-radius:4px;padding:2px;font-size:18px"> 个
+        </div>
+      </div>
+      <div style="text-align:center;font-size:13px;margin-top:4px">
+        自己改对的（红色标签）<input type="number" id="redFixed" value="0" min="0" max="20" style="width:45px;text-align:center;border:1px solid #ddd;border-radius:4px;padding:2px;font-size:14px"> 道 &nbsp;
+        看视频才懂的（黄色标签）<input type="number" id="yellowFixed" value="0" min="0" max="20" style="width:45px;text-align:center;border:1px solid #ddd;border-radius:4px;padding:2px;font-size:14px"> 道
+      </div>
+      <div class="tip" style="margin-top:8px">
+        ⚠️ <b>自查合格标准：</b>自查发现的错误 > 对答案发现的错误。<br>
+        如果自查0个但对答案一堆→自查没用心，明天重练！
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 2. 专注提醒 ==================== -->
+<div class="tab-content" id="tab-focus">
+  <div class="card">
+    <h2>🧠 学习前 · 环境准备（开始前花2分钟）</h2>
+    <div class="focus-card">
+      <div class="f-title">🚫 清空桌面</div>
+      <div class="f-item"><span class="f-emoji">📱</span>平板放到书桌固定位置，不要拿走</div>
+      <div class="f-item"><span class="f-emoji">🎮</span>和学习无关的东西全部拿走（玩具、零食、手机）</div>
+      <div class="f-item"><span class="f-emoji">💡</span>桌面上只放：今天要用的教辅、铅笔、草稿纸、红笔</div>
+    </div>
+    <div class="focus-card">
+      <div class="f-title">🚰 提前搞定生理需求</div>
+      <div class="f-item"><span class="f-emoji">💧</span>先喝水、先上厕所——开始学习后45分钟内不离开座位</div>
+      <div class="f-item"><span class="f-emoji">🔋</span>平板充好电（前一天晚上爸爸会检查）</div>
+    </div>
+    <div class="focus-card">
+      <div class="f-title">⏰ 定好计时器</div>
+      <div class="f-item"><span class="f-emoji">⏱️</span>用平板/手表设25分钟倒计时，铃声一响才能站起来休息</div>
+      <div class="f-item"><span class="f-emoji">📋</span>休息时间只看窗外或喝水，不碰屏幕</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📦 学习结束 · 收尾整理（花2分钟）</h2>
+    <div class="focus-card">
+      <div class="f-item"><span class="f-emoji">📚</span>教辅合上、按科目摞好放回书架</div>
+      <div class="f-item"><span class="f-emoji">✏️</span>铅笔、红笔、三角板收回笔筒</div>
+      <div class="f-item"><span class="f-emoji">🗑️</span>草稿纸整理：有用的收好，废纸扔掉</div>
+      <div class="f-item"><span class="f-emoji">📱</span>平板退出学习App，放回书桌固定位置</div>
+      <div class="f-item"><span class="f-emoji">✨</span>桌面恢复干净——明天坐下来就能直接开始</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💪 学习中 · 专注规则</h2>
+    <table class="info-table">
+      <tr><th style="width:40px">序号</th><th>规则</th><th>为什么</th></tr>
+      <tr><td>1</td><td><b>一次只做一件事</b>：做数学就看数学，不偷偷翻语文</td><td>大脑切换任务会浪费时间和精力</td></tr>
+      <tr><td>2</td><td><b>不会的不纠结</b>：卡住超过5分钟→在题号旁画⭐跳到下一题</td><td>死磕一道题浪费整个学习时段</td></tr>
+      <tr><td>3</td><td><b>不用平板查答案</b>：做题时不翻书不查平板，独立完成</td><td>考试时没有平板，这个习惯要练</td></tr>
+      <tr><td>4</td><td><b>草稿纸写整齐</b>：每道题标清题号，不乱写乱画</td><td>草稿乱=思路乱=容易粗心</td></tr>
+      <tr><td>5</td><td><b>审题四步法不忘</b>：圈数字→圈关键词→写关系→回读</td><td>40%的错误是没认真读题</td></tr>
+      <tr><td>6</td><td><b>做完必自查</b>：每道大题旁红笔写"已查✓"</td><td>没有自查的题=没做完</td></tr>
+    </table>
+    <div class="tip">💡 <b>给爸爸看：</b>草稿纸上有没有题号？有没有"已查✓"？没有的话今晚扣一颗⭐</div>
+  </div>
+
+  <div class="card">
+    <h2>😌 状态不好怎么办</h2>
+    <div class="focus-card">
+      <div class="f-title">🟢 轻度走神</div>
+      <div class="f-item">站起来喝口水→窗外看30秒→回来继续，不要拿平板</div>
+    </div>
+    <div class="focus-card">
+      <div class="f-title">🟡 感觉累了</div>
+      <div class="f-item">休息5分钟（只能看窗外/喝水/上厕所，不能碰屏幕）→回来继续</div>
+    </div>
+    <div class="focus-card">
+      <div class="f-title">🔴 状态很差</div>
+      <div class="f-item">启动"最低配模式"：只做口算20题（5分钟）+ 读课外书 + 英语音频背景播放。完成这三样就算达标。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌟 每天自评标准</h2>
+    <table class="info-table">
+      <tr><th>评分</th><th>标准</th></tr>
+      <tr><td>😊</td><td>全部任务完成 + 审题四步法都做了 + 粗心≤2次</td></tr>
+      <tr><td>😐</td><td>大部分完成，有1-2项没做，或者粗心3-5次</td></tr>
+      <tr><td>☹️</td><td>超过一半没做完，或者根本没按四步法做</td></tr>
+    </table>
+    <div class="tip">💡 连续3天😊=周末奖励30分钟游戏/动画时间</div>
+  </div>
+</div>
+
+<!-- ==================== 3. 每日详情 ==================== -->
+<div class="tab-content" id="tab-detail">
+  <div class="card day-detail">
+    <h2>📖 逐日详细计划</h2>
+    <div class="day-nav" id="dayNav"></div>
+    <div id="dayContent"></div>
+  </div>
+</div>
+
+<!-- ==================== 4. 阶段诊断小测 ==================== -->
+<div class="tab-content" id="tab-test">
+  <div class="card" style="background:#fffbf0;border:2px solid #f39c12">
+    <h2>⚠️ 做题前，先默念审题四步法</h2>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div class="title">圈数字</div><div class="action">铅笔圈出所有数字</div></div>
+      <div class="step"><div class="num">2</div><div class="title">圈关键词</div><div class="action">"一共""平均""每""不是"</div></div>
+      <div class="step"><div class="num">3</div><div class="title">写关系</div><div class="action">加/减/乘/除？为什么？</div></div>
+      <div class="step"><div class="num">4</div><div class="title">回读</div><div class="action">做完回头看题目</div></div>
+    </div>
+    <div class="tip" style="margin-top:8px">📄 <b>在草稿纸上做题</b>，每道大题做完用红笔写<b>"已查✓"</b>。自查三问：数字？计算？单位？</div>
+  </div>
+
+  <div class="card">
+    <h2>第一部分：细心陷阱（每题12分，共36分）</h2>
+    <div style="font-size:14px;color:#888;margin-bottom:8px">这些题思路不难，但容易粗心。做完一定回读。</div>
+
+    <div style="background:#fef9f4;border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-weight:bold;color:#c0392b;margin-bottom:6px">第1题（12分）</div>
+      <div style="font-size:18px;text-align:center;padding:8px;background:#fff;border-radius:6px;margin-bottom:6px"><b>380 × [156 - (172 - 18)] = ？</b></div>
+      <div style="font-size:12px;color:#888">草稿纸上写出每一步，圈出数字后再算。做完回读——每一步都对了吗？</div>
+    </div>
+
+    <div style="background:#fef9f4;border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-weight:bold;color:#c0392b;margin-bottom:6px">第2题（12分）</div>
+      <div style="font-size:18px;text-align:center;padding:8px;background:#fff;border-radius:6px;margin-bottom:6px"><b>63 + 48 ÷ 12 × 5 = ？</b></div>
+      <div style="font-size:12px;color:#888">先乘除后加减！48÷12=？→ 再×5=？→ 最后+63=？</div>
+    </div>
+
+    <div style="background:#fef9f4;border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-weight:bold;color:#c0392b;margin-bottom:6px">第3题（12分）</div>
+      <div style="font-size:18px;text-align:center;padding:8px;background:#fff;border-radius:6px;margin-bottom:6px">在 ○ 里填"＞""＜"或"＝"：<br><b>0.36 ○ 360/1000</b></div>
+      <div style="font-size:12px;color:#888">先把 360÷1000 化成小数，再比较。小数点点对了吗？</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>第二部分：平均数反推（每题15分，共30分）</h2>
+    <div class="tip" style="margin-bottom:10px">🔑 核心公式：<b>总数 = 平均数 × 份数</b>（反推全靠它！）</div>
+
+    <div style="background:#f0f8ff;border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-weight:bold;color:#2980b9;margin-bottom:6px">第4题（15分）</div>
+      <div style="font-size:15px;padding:8px;background:#fff;border-radius:6px;margin-bottom:6px">小明前4次数学测试平均分是<b>88分</b>，第5次他考了<b>98分</b>。<br><br><b>这5次测试的平均分是多少？</b></div>
+      <div style="font-size:12px;color:#888">
+        第一步：前4次总分 = 88 × 4 = ______<br>
+        第二步：5次总分 = ______ + 98 = ______<br>
+        第三步：5次平均 = ______ ÷ 5 = ______
+      </div>
+    </div>
+
+    <div style="background:#f0f8ff;border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-weight:bold;color:#2980b9;margin-bottom:6px">第5题（15分）</div>
+      <div style="font-size:15px;padding:8px;background:#fff;border-radius:6px;margin-bottom:6px">5个同学平均身高是<b>152厘米</b>。又来了1个同学后，6个人的平均身高变成了<b>153厘米</b>。<br><br><b>新来的同学身高是多少厘米？</b></div>
+      <div style="font-size:12px;color:#888">
+        第一步：原来5人总身高 = 152 × 5 = ______<br>
+        第二步：现在6人总身高 = 153 × 6 = ______<br>
+        第三步：新来同学身高 = ______ - ______ = ______
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>第三部分：单位换算（每题10分，共20分）</h2>
+    <div class="tip" style="margin-bottom:10px">📐 进率口诀：长度×10，面积×100，重量×1000</div>
+
+    <div style="background:#f0fff0;border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-weight:bold;color:#27ae60;margin-bottom:6px">第6题（10分）</div>
+      <div style="font-size:15px;padding:8px;background:#fff;border-radius:6px;margin-bottom:6px">在 ○ 里填"＞""＜"或"＝"（<b>写出换算过程</b>）：<br><br><b>3.05 m² ○ 350 dm²</b></div>
+      <div style="font-size:12px;color:#888">3.05 m² = ______ dm²（进率是100！）<br>______ dm² ○ 350 dm² → 填 ______</div>
+    </div>
+
+    <div style="background:#f0fff0;border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-weight:bold;color:#27ae60;margin-bottom:6px">第7题（10分）</div>
+      <div style="font-size:15px;padding:8px;background:#fff;border-radius:6px;margin-bottom:6px">填一填：<br><br><b>2.4 吨 = ( &nbsp;&nbsp;&nbsp;&nbsp; ) 千克</b><br><b>750 cm² = ( &nbsp;&nbsp;&nbsp;&nbsp; ) dm²</b></div>
+      <div style="font-size:12px;color:#888">1吨 = ______ kg / 1dm² = ______ cm²</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>第四部分：综合（14分）</h2>
+    <div style="background:#fff0f0;border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-weight:bold;color:#c0392b;margin-bottom:6px">第8题（14分）</div>
+      <div style="font-size:15px;padding:8px;background:#fff;border-radius:6px;margin-bottom:6px">一块长方形菜地，长<b>25米</b>，宽<b>8米</b>。每平方米收白菜<b>4千克</b>。<br><br><b>这块地一共收多少吨白菜？</b></div>
+      <div style="font-size:12px;color:#888">
+        第一步：菜地面积 = 25 × 8 = ______ (m²)<br>
+        第二步：总产量 = ______ × 4 = ______ (kg)<br>
+        第三步：换算成吨 = ______ ÷ 1000 = ______ (吨)<br>
+        ⚠️ 最后单位是"吨"，别忘了换算！
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="background:#fffbf0;border:2px solid #27ae60">
+    <h2>✅ 交卷前逐题检查</h2>
+    <div style="font-size:14px">
+      <div class="parent-check"><input type="checkbox" id="tc1" onchange="saveTestChecks()"> 第1题：172-18 算对了吗？380×2？</div>
+      <div class="parent-check"><input type="checkbox" id="tc2" onchange="saveTestChecks()"> 第2题：48÷12=？×5=？63+这个数？</div>
+      <div class="parent-check"><input type="checkbox" id="tc3" onchange="saveTestChecks()"> 第3题：360÷1000 小数点点对了吗？</div>
+      <div class="parent-check"><input type="checkbox" id="tc4" onchange="saveTestChecks()"> 第4题：总数=平均数×份数，用了吗？</div>
+      <div class="parent-check"><input type="checkbox" id="tc5" onchange="saveTestChecks()"> 第5题：先求"原来总"和"现在总"了吗？</div>
+      <div class="parent-check"><input type="checkbox" id="tc6" onchange="saveTestChecks()"> 第6题：m²→dm² 进率是100，用对了吗？</div>
+      <div class="parent-check"><input type="checkbox" id="tc7" onchange="saveTestChecks()"> 第7题：吨→kg 进率？cm²→dm² 进率？</div>
+      <div class="parent-check"><input type="checkbox" id="tc8" onchange="saveTestChecks()"> 第8题：最后单位是"吨"，换算了没有？</div>
+      <div style="text-align:center;margin-top:10px;font-size:16px;font-weight:bold;color:#c0392b">全部检查完了，大声说"我交卷了！"然后叫爸爸来批改 📢</div>
+    </div>
+  </div>
+
+  <div class="card" style="background:#f0faf0;border:2px solid #27ae60">
+    <h2>📊 8/1 实测结果（自己做完了再来看！）</h2>
+    <table class="info-table">
+      <tr><th>题号</th><th>类型</th><th>正确答案</th><th>结果</th></tr>
+      <tr><td>1</td><td>粗心陷阱</td><td><b>760</b></td><td style="color:#27ae60">✅</td></tr>
+      <tr><td>2</td><td>粗心陷阱</td><td><b>83</b></td><td style="color:#27ae60">✅</td></tr>
+      <tr><td>3</td><td>粗心陷阱</td><td><b>＝</b></td><td style="color:#27ae60">✅</td></tr>
+      <tr><td>4</td><td>平均数</td><td><b>90分</b></td><td style="color:#27ae60">✅</td></tr>
+      <tr><td>5</td><td>平均数反推</td><td><b>158cm</b></td><td style="color:#27ae60">✅</td></tr>
+      <tr style="background:#fff0f0"><td>6</td><td>单位换算</td><td><b>＜</b>（3.05m²=305dm²）</td><td style="color:#c0392b">❌ 粗心：进率用了10</td></tr>
+      <tr><td>7</td><td>单位换算</td><td><b>2400kg / 7.5dm²</b></td><td style="color:#27ae60">✅</td></tr>
+      <tr><td>8</td><td>综合</td><td><b>0.8吨</b></td><td style="color:#27ae60">✅</td></tr>
+    </table>
+    <div style="margin-top:10px;padding:10px;background:#fff;border-radius:8px;font-size:14px">
+      <div style="text-align:center;margin-bottom:8px"><b style="font-size:18px;color:#27ae60">🏆 总分：90分</b>　<b style="color:#c0392b">🚦 绿灯</b></div>
+      <div>✅ 粗心从 40.7%（11道）→ <b>12.5%（1道）</b>——四步法起效了！</div>
+      <div style="margin-top:4px">⚠️ 第6题提醒：<b>面积进率是100</b>（不是10）。下次写换算前先在旁边标"×100"！</div>
+      <div style="margin-top:4px">📅 下一步：周末休息，8/3 正常进入第二阶段（概念补漏）</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 5. 家长查验（极简版） ==================== -->
+<div class="tab-content" id="tab-check">
+  <div class="card" style="background:#fffbf0;border:2px solid #f39c12">
+    <h2>⚡ 每日查验 · 极简版（30秒）</h2>
+    <div style="font-size:14px;text-align:center;padding:10px 0">
+      <div style="font-size:48px;padding:10px">🔍</div>
+      <div style="font-weight:bold;font-size:18px;color:#c0392b;margin-bottom:8px">翻孩子的数学草稿纸</div>
+      <div style="font-size:14px;color:#666;margin-bottom:4px">今天做了几道数学题？</div>
+      <div style="font-size:14px;color:#666;margin-bottom:12px">其中几道有<b>铅笔圈痕</b> + 红笔<b>"已查✓"</b>？</div>
+    </div>
+
+    <div class="parent-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="parent-item" style="background:#fff">
+        <div class="label">今天做了</div>
+        <div><input type="number" id="totalQ" min="0" max="30" value="0" style="width:50px;text-align:center;border:1px solid #ddd;border-radius:4px;font-size:24px;font-weight:bold;color:#c0392b" onchange="saveMiniCheck()"> 道</div>
+      </div>
+      <div class="parent-item" style="background:#fff">
+        <div class="label">有圈痕+已查✓</div>
+        <div><input type="number" id="markedQ" min="0" max="30" value="0" style="width:50px;text-align:center;border:1px solid #ddd;border-radius:4px;font-size:24px;font-weight:bold;color:#27ae60" onchange="saveMiniCheck()"> 道</div>
+      </div>
+      <div class="parent-item" style="background:#fff">
+        <div class="label">执行率</div>
+        <div class="value" id="execRate" style="color:#c0392b">—%</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:10px;font-size:15px;font-weight:bold" id="execVerdict"></div>
+  </div>
+
+  <div class="card">
+    <h2>🚦 三秒判断</h2>
+    <div style="font-size:14px">
+      <div style="background:#f0faf0;border-radius:8px;padding:10px;margin-bottom:6px">
+        <b>🟢 ≥ 80%：</b>习惯在形成。不用管，继续。
+      </div>
+      <div style="background:#fff8f0;border-radius:8px;padding:10px;margin-bottom:6px">
+        <b>🟡 50%-79%：</b>在偷懒跳步。明天做题前让他当你面背一遍四步法+自查三问。
+      </div>
+      <div style="background:#ffe8e8;border-radius:8px;padding:10px;margin-bottom:6px">
+        <b>🔴 ＜ 50% 连续3天：</b>方法没内化。每天只做5道但每道必须完整走流程。
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📊 今日数据</h2>
+    <div class="parent-grid">
+      <div class="parent-item"><div class="label">任务完成</div><div class="value" id="dataDone">—/—</div></div>
+      <div class="parent-item"><div class="label">今日粗心</div><div class="value" id="dataCareless">—次</div></div>
+      <div class="parent-item"><div class="label">口算得分</div><div class="value"><input type="number" id="oralScore" min="0" max="20" value="0" style="width:45px;text-align:center;border:1px solid #ddd;border-radius:4px;font-size:18px;font-weight:bold;color:#8e44ad" onchange="saveMiniCheck()">/20</div></div>
+      <div class="parent-item"><div class="label">执行率</div><div class="value" id="dataRate">—%</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📈 粗心消灭进度</h2>
+    <div style="font-size:13px">🔴 诊断时(7/24)：<b>11道粗心 / 27道错题</b></div>
+    <div style="margin-top:10px;background:#f0faf0;border-radius:8px;padding:8px 10px">✅ <b>8/1 小测结果</b>：<b style="color:#27ae60;font-size:16px">90分</b>，仅错 <b style="color:#e67e22;">1道</b>（第6题·m²→dm²进率用成10） | 🟢 绿灯 | 8/3 进入第二阶段</div>
+    <div style="margin-top:10px">第二阶段末(8/7) 目标≤3道：<input type="number" id="phase2Val" min="0" max="20" value="11" style="width:45px;text-align:center;border:1px solid #ddd;border-radius:4px;font-size:13px" onchange="saveMiniCheck()"> 道</div>
+    <div style="margin-top:10px">🏁 验收日(8/24) 目标≤2道：<input type="number" id="finalVal" min="0" max="20" value="11" style="width:45px;text-align:center;border:1px solid #ddd;border-radius:4px;font-size:13px" onchange="saveMiniCheck()"> 道</div>
+  </div>
+
+  <div class="card" style="background:#f8f4ff;">
+    <h2>💡 太累了？最低配查验（5秒）</h2>
+    <div style="font-size:16px;text-align:center;padding:12px;font-weight:bold;color:#8e44ad">
+      只问孩子一句话：<br><br>
+      "今天做题圈数字了吗？给我看看。"<br><br>
+      他翻了草稿纸给你看 → ✅ 达标，完事。<br>
+      支支吾吾翻不出来 → ⚠️ 明天补上。
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 5. 本周总览 ==================== -->
+<div class="tab-content" id="tab-week">
+  <div class="card">
+    <h2>📅 本周安排</h2>
+    <div id="weekPlan"></div>
+  </div>
+
+  <div class="card">
+    <h2>🗓️ 五周总览</h2>
+    <table style="width:100%;font-size:13px;border-collapse:collapse">
+      <tr style="background:#c0392b;color:#fff"><td style="padding:5px">阶段</td><td style="padding:5px">日期</td><td style="padding:5px">工作日</td><td style="padding:5px">重点</td></tr>
+      <tr style="background:#fff0f0"><td style="padding:5px">🔴一</td><td style="padding:5px">7/24(五)—7/26(六)</td><td style="padding:5px">2+1</td><td style="padding:5px">粗心整治+审题习惯（周五复盘、周六补漏）</td></tr>
+      <tr style="background:#fff0f0"><td style="padding:5px">🔴一</td><td style="padding:5px">7/27(一)—7/31(五)</td><td style="padding:5px">5</td><td style="padding:5px">粗心训练+平均数+单位换算+收尾验收</td></tr>
+      <tr style="background:#fff8f0"><td style="padding:5px">🟡二</td><td style="padding:5px">8/3(一)—8/7(五)</td><td style="padding:5px">5</td><td style="padding:5px">概念补漏+策略训练+验收</td></tr>
+      <tr style="background:#f0fff0"><td style="padding:5px">🟢三</td><td style="padding:5px">8/10(一)—8/21(五)</td><td style="padding:5px">10</td><td style="padding:5px">五上预习（小数乘除+位置+可能性）</td></tr>
+      <tr style="background:#f0f0ff"><td style="padding:5px">🏁</td><td style="padding:5px">8/24(一)</td><td style="padding:5px">1</td><td style="padding:5px">《黄冈达标卷》四下综合卷（四）验收</td></tr>
+    </table>
+  </div>
+
+  <div class="card" style="background:#fffbf0">
+    <h2>🔄 多端数据同步说明</h2>
+    <div style="font-size:14px">
+      <p>本工具的数据（打勾、自评、查验记录）存在浏览器的 localStorage 里。</p>
+      <p style="margin-top:6px"><b>这意味：</b>你在电脑上打的勾，手机上打开看不到。</p>
+      <p style="margin-top:8px"><b>最简单的用法：</b></p>
+      <p>① 孩子平板打开 → 看任务卡 → 打完勾截图发给爸爸</p>
+      <p>② 爸爸手机/电脑打开 → 看"每日详情"获取教学要点 → 晚上切换到"查验"打勾</p>
+      <p>③ 各设备数据独立，不需要同步</p>
+      <p style="margin-top:8px"><b>想同步的话：</b></p>
+      <p>① 把HTML文件放进<b>坚果云/OneDrive</b>同步文件夹</p>
+      <p>② 所有设备从同一个同步路径打开 → 数据跟着文件走</p>
+      <p>③ 注意：iOS设备对本地文件的localStorage支持有限，建议用截图方式</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 英语补缺卡片 ==================== -->
+<div class="tab-content" id="tab-english">
+  <div class="card" style="background:#fff8e1;border:2px solid #ff9800;margin-bottom:12px">
+    <div style="font-size:14px;color:#e67e22;line-height:1.7">
+      💡 <b>说明</b>：U1-U4 是第一阶段没按老师格式做的部分。<br>
+      自己决定要不要补，做完一个勾一个，每单元约 <b>15-20 分钟</b>。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="border-bottom-color:#ff9800">🔴 必做：单词默写 + 句型抄写</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:8px">每单元：四会单词默写 → 翻书自批 → 错词订正2遍 → 抄写3个核心句型</p>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <label style="display:flex;align-items:flex-start;gap:8px;background:#fafafa;border-radius:10px;padding:10px 12px;cursor:pointer">
+        <input type="checkbox" onchange="saveEngChecks()" class="eng-check" style="width:22px;height:22px;accent-color:#ff9800;flex-shrink:0;margin-top:2px">
+        <div><b>Unit 1</b><br><span style="font-size:12px;color:#888">单词默写+自批订正 → 抄写3个核心句型（注意大小写+标点）</span></div>
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:8px;background:#fafafa;border-radius:10px;padding:10px 12px;cursor:pointer">
+        <input type="checkbox" onchange="saveEngChecks()" class="eng-check" style="width:22px;height:22px;accent-color:#ff9800;flex-shrink:0;margin-top:2px">
+        <div><b>Unit 2</b><br><span style="font-size:12px;color:#888">单词默写+自批订正 → 抄写3个核心句型（注意大小写+标点）</span></div>
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:8px;background:#fafafa;border-radius:10px;padding:10px 12px;cursor:pointer">
+        <input type="checkbox" onchange="saveEngChecks()" class="eng-check" style="width:22px;height:22px;accent-color:#ff9800;flex-shrink:0;margin-top:2px">
+        <div><b>Unit 3</b><br><span style="font-size:12px;color:#888">单词默写+自批订正 → 抄写3个核心句型（注意大小写+标点）</span></div>
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:8px;background:#fafafa;border-radius:10px;padding:10px 12px;cursor:pointer">
+        <input type="checkbox" onchange="saveEngChecks()" class="eng-check" style="width:22px;height:22px;accent-color:#ff9800;flex-shrink:0;margin-top:2px">
+        <div><b>Unit 4</b><br><span style="font-size:12px;color:#888">单词默写+自批订正 → 抄写3个核心句型（注意大小写+标点）</span></div>
+      </label>
+    </div>
+  </div>
+
+  <div class="card" style="border:1px dashed #ddd">
+    <h2 style="border-bottom-color:#ff9800">🟠 选做：拔高（任选1个单元）</h2>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <label style="display:flex;align-items:flex-start;gap:8px;background:#fafafa;border-radius:10px;padding:10px 12px;cursor:pointer">
+        <input type="checkbox" onchange="saveEngChecks()" class="eng-check" style="width:22px;height:22px;accent-color:#ff9800;flex-shrink:0;margin-top:2px">
+        <div><b>句型仿写</b>（选1个单元）<br><span style="font-size:12px;color:#888">选一个单元的3个核心句型，替换关键词仿写，每组写2-3句</span></div>
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:8px;background:#fafafa;border-radius:10px;padding:10px 12px;cursor:pointer">
+        <input type="checkbox" onchange="saveEngChecks()" class="eng-check" style="width:22px;height:22px;accent-color:#ff9800;flex-shrink:0;margin-top:2px">
+        <div><b>对话复述</b>（选1个单元）<br><span style="font-size:12px;color:#888">选一个单元的对话，用自己的话复述出来，写≥3句话</span></div>
+      </label>
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:32px;margin:12px 0" id="engEmoji">😴</div>
+  <div style="text-align:center;color:#bbb;font-size:12px;margin-bottom:10px">全部搞定找爸爸验收 ✌️</div>
+</div>
+
+<script>
+// ========== 全局数据 ==========
+const dayNames = ['日','一','二','三','四','五','六'];
+const today = new Date();
+const todayStr = fmtDate(today);
+function fmtDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+// ========== 完整每日计划 ==========
+const ALL_PLANS = {
+  '2026-07-24':{
+    phase:'🔴',title:'周五 · 诊断复盘课',
+    blocks:[
+      {time:'10:00-10:25',title:'早读',detail:'语文：朗读四下课文 15分钟\n英语：平板跟读四下第4单元 10分钟'},
+      {time:'10:30-11:30',title:'数学：诊断复盘课（家长带40分钟）',detail:'① 把27道错题分🔴红（粗心11道）和🟡黄（真不懂16道）给孩子看\n② 教"审题四步法"：用470×[234-(248-16)]做示范\n③ 教"自查三问"：数字？计算？单位？\n④ 当场挑5道红色粗心题重做，要求全对'},
+      {time:'11:35-11:55',title:'语文：阅读理解',detail:'《一本·阅读训练100篇》1篇（12分钟做+8分钟对答案）'},
+      {time:'12:00-12:15',title:'英语：单词认读',detail:'四下单词表第4单元，遮中文说意思'},
+      {time:'12:15-12:30',title:'口算',detail:'《口算大通关》1页 20题，计时'},
+      {time:'12:30-13:00',title:'弹性',detail:'错题本红黄分类贴标签 + 课外阅读'}
+    ],
+    night:'📋 今晚准备：打印27道错题清单；在"智慧中小学"收藏四下第8单元"平均数"微课\n🌙 查验重点：5道粗心重做全对吗？/ 和孩子一起分红色黄色标签 / 口算批改'
+  },
+  '2026-07-25':{
+    phase:'🔴',title:'周六 · 补漏加练（本周二已休假）',
+    blocks:[
+      {time:'10:00-10:25',title:'早读',detail:'语文：朗读四下课文 15分钟\n英语：平板跟读四下第1-4单元复习 10分钟'},
+      {time:'10:30-11:30',title:'数学：粗心提前启动',detail:'① 把昨天剩下的6道粗心错题（11道中昨天做了5道）用审题四步法重做\n② 背审题四步法和自查三问（要求能脱稿说一遍）\n③ 如果11道昨天已全做完→今天用《5·3天天练》四下做5道新题练审题'},
+      {time:'11:35-11:55',title:'语文：阅读理解',detail:'《一本》1篇'},
+      {time:'12:00-12:15',title:'英语',detail:'四下单词U1-U4复习认读，不会的圈出来'},
+      {time:'12:15-12:30',title:'口算',detail:'《口算大通关》1页 20题，计时'},
+      {time:'12:30-13:00',title:'弹性',detail:'错题本 + 课外阅读'},
+      {time:'13:00起',title:'🏖️ 下午自由',detail:'完成上午任务后，下午自由活动'}
+    ],
+    night:'🌙 查验：粗心题重做全对吗？审题标记画了吗？\n📋 准备：打印/手写11道粗心错题"擦掉答案版"（周一用）'
+  },
+  '2026-07-27':{
+    phase:'🔴',title:'周一 · 粗心专项训练（一）',
+    blocks:[
+      {time:'10:00-10:25',title:'早读',detail:'语文：朗读四下课文 15分钟\n英语：平板跟读四下第5单元 10分钟'},
+      {time:'10:30-11:30',title:'数学：11道粗心错题重做',detail:'① 用"擦掉答案版"重做全部粗心错题\n② 每道必须写审题标记：圈数字✓ 圈关键词✓ 写关系✓ 回读✓\n③ 做完一道自查一道，红笔写"已查✓"\n④ 目标：11道全对。没全对→下午重做到全对'},
+      {time:'11:35-11:55',title:'语文：阅读理解',detail:'《一本·阅读训练100篇》第1篇（12分钟做+8分钟对答案）'},
+      {time:'12:00-12:15',title:'英语',detail:'四下单词表第5单元，遮中文说意思'},
+      {time:'12:15-12:30',title:'口算',detail:'《口算大通关》1页 20题，计时'},
+      {time:'12:30-13:00',title:'弹性',detail:'错题本 + 课外阅读'}
+    ],
+    night:'🌙 查验：11道全对吗？审题标记画了吗（没画=没做到）？粗心错→问"跳了哪步？"\n📋 准备：从《5·3》四下挑10道含粗心陷阱新题'
+  },
+  '2026-07-28':{
+    phase:'🔴',title:'周二 · 粗心专项训练（二）',
+    blocks:[
+      {time:'10:00-10:25',title:'早读',detail:'语文：朗读四下课文 15分钟\n英语：平板跟读四下第6单元 10分钟'},
+      {time:'10:30-11:30',title:'数学：新题实战（《5·3天天练》四下）',detail:'① 做10道混合新题，含粗心陷阱\n② 审题四步法全程执行\n③ 做完用红笔自查，圈出发现的错误\n④ 统计：发现几个？漏了几个？\n⑤ 目标：漏掉≤1道'},
+      {time:'11:35-11:55',title:'语文：阅读理解',detail:'《一本·阅读训练100篇》1篇（12分钟做+8分钟对答案）'},
+      {time:'12:00-12:15',title:'英语',detail:'四下单词表第6单元，遮中文说意思'},
+      {time:'12:15-12:30',title:'口算',detail:'《口算大通关》1页 20题，计时'},
+      {time:'12:30-13:00',title:'弹性',detail:'错题本 + 课外阅读'}
+    ],
+    night:'🌙 查验：自查漏掉几个？（>2=习惯还没建立）问"为什么自查没发现？"\n📋 准备：收藏四下第8单元"平均数"微课'
+  },
+  '2026-07-29':{
+    phase:'🔴',title:'周三 · 平均数专项',
+    blocks:[
+      {time:'10:00-10:25',title:'早读',detail:'语文：朗读四下课文 15分钟\n英语：平板跟读四下第1-3单元复习 10分钟'},
+      {time:'10:30-11:30',title:'数学：平均数——诊断中4道全错！',detail:'① 看"智慧中小学"四下第8单元"平均数"微课 15分钟\n② 讲透反推：总数=平均数×份数 ←这个完全不会\n③ 诊断错题重做：选-7（小奇169>159）、填-8（325不是90g）、选-3（虚线）、卷2二-6（小刚不是小亮）\n④ 做《5·3》四下第8单元基础题'},
+      {time:'11:35-11:55',title:'语文：阅读理解',detail:'《一本》第2篇'},
+      {time:'12:00-12:15',title:'英语',detail:'四下单词U1-U3复习认读'},
+      {time:'12:15-12:30',title:'口算',detail:'《口算大通关》1页 20题，计时'},
+      {time:'12:30-13:00',title:'弹性',detail:'错题本 + 课外阅读'}
+    ],
+    night:'🌙 查验：反推公式背下来了吗？/ 每道写了"总数=平均数×份数"吗？\n📋 准备：手写进率表贴墙上（长度×10/面积×100/重量×1000）'
+  },
+  '2026-07-30':{
+    phase:'🔴',title:'周四 · 单位换算专项',
+    blocks:[
+      {time:'10:00-10:25',title:'早读',detail:'语文：朗读四下课文 15分钟\n英语：平板跟读四下第4-6单元复习 10分钟'},
+      {time:'10:30-11:30',title:'数学：单位换算——诊断中3道全错！',detail:'① 背进率表（贴墙上）：长度×10 面积×100 重量×1000\n口诀：长度进率10，面积进率100，重量进率1000\n② 诊断错题重做：0.27vs270/1000、4.05m²vs450dm²、84.5÷?=0.845\n③ 做《5·3》四下第4单元单位换算\n④ 每道题写出进率再换算'},
+      {time:'11:35-11:55',title:'语文：阅读理解',detail:'《一本·阅读训练100篇》1篇（12分钟做+8分钟对答案）'},
+      {time:'12:00-12:15',title:'英语',detail:'四下单词U4-U6复习认读'},
+      {time:'12:15-12:30',title:'口算',detail:'《口算大通关》1页 20题，计时'},
+      {time:'12:30-13:00',title:'弹性',detail:'错题本 + 课外阅读'}
+    ],
+    night:'🌙 查验：进率抽查（1m²=?dm² 1t=?kg 1km=?m）/ 批改\n📋 准备：从黄冈达标卷挑20道验收题'
+  },
+  '2026-07-31':{
+    phase:'🔴',title:'周五 · 第一阶段验收',
+    blocks:[
+      {time:'10:00-10:25',title:'早读',detail:'语文：朗读四下课文 15分钟\n英语：平板跟读四下 10分钟'},
+      {time:'10:30-11:30',title:'数学：第一阶段验收（40分钟）',detail:'一、粗心陷阱5道（含诊断原题）\n二、平均数3道\n三、单位换算3道\n目标≥85分，粗心扣分≤1道'},
+      {time:'11:35-11:55',title:'语文：阅读理解',detail:'《一本》第3篇'},
+      {time:'12:00-12:15',title:'英语',detail:'四下全部单词总复习'},
+      {time:'12:15-12:30',title:'口算',detail:'《口算大通关》综合20题（目标10分钟内）'},
+      {time:'12:30-13:00',title:'弹性',detail:'本周错题大回顾'}
+    ],
+    night:'🌙 （最重要！）批改打分→粗心还剩几道（目标≤1）→如果>3道下阶段加练→夸进步！\n周末休息'
+  },
+  '2026-08-01':{
+    phase:'🔴',title:'周六 · 第一阶段诊断小测（补7/31）',
+    blocks:[
+      {time:'10:00-10:25',title:'早读',detail:'语文：朗读四下课文 15分钟\n英语：平板跟读四下 10分钟'},
+      {time:'10:30-11:10',title:'数学：快速诊断小测（20-30分钟）',detail:'📝 切换到"小测"标签，8道题在平板上看，草稿纸上做题\n⚠️ 审题四步法全程执行！每道做完红笔写"已查✓"\n做完后逐题检查→叫爸爸批改'},
+      {time:'11:15-11:35',title:'语文',detail:'阅读理解1篇或字词听写10个'},
+      {time:'11:40-12:00',title:'英语',detail:'四下单词复习认读'},
+      {time:'12:00-12:15',title:'口算',detail:'《口算大通关》1页20题，计时'},
+      {time:'12:15-13:00',title:'弹性+下午自由',detail:'错题本翻看 / 课外阅读 / 🏖️下午完全自由'}
+    ],
+    night:'🌙 批改小测→数粗心几道→对照"答案与诊断"判断🟢🟡🔴→决定下一步\n📋 答案文件：第一阶段-诊断小测-答案与诊断.md'
+  }
+};
+
+// 第二阶段模板
+const P2 = {
+  '2026-08-03':{phase:'🟡',title:'周一 · 乘法分配律',blocks:[
+    {time:'10:00-10:25',title:'早读',detail:'语文朗读+英语跟读五上U1'},
+    {time:'10:30-11:30',title:'数学：乘法分配律',detail:'①看智慧中小学四下第3单元微课15分钟\n②画圈圈图理解(5+3)×4=5×4+3×4\n③诊断错题重做：\n\n【第1题·图示对应】\n看图写出对应的算式：\n图①：■■■■■□□□（5黑+3白，2行）\n图②：■■■■□□（4黑+2白，3行）\n→ 乘法分配律：(a+b)×c = a×c + b×c\n\n【第2题·简便计算】\n45×54 + 56×54 − 54 = ？\n提示：54=54×1，把54提出来\n→ 54×(45+56−1) = 54×100 = 5400\n\n━━ 以下是《5·3》四下第3单元基础题 ━━\n\n第3题·在□里填数，在○里填运算符号：\n(1) (25+15)×4 = □×4 + □×4\n(2) 37×8 + 63×8 = (□+□)×□\n(3) 125×(80+8) = 125×□ + 125×□\n(4) 45×102 = 45×(100+□) = 45×□ + 45×□\n\n第4题·用简便方法计算（写出过程）：\n(1) 99×26    (2) 78×56−78×46\n(3) 25×(40+4)  (4) 63×101−63\n\n第5题·解决问题：\n买45套课桌椅，桌子68元/张，椅子32元/把。一共？\n方法一：(68+32)×45    方法二：68×45+32×45\n→ 结果一样吗？说明了什么？\n\n━━ ✅ 自查三问：数字？计算？单位？红笔写已查✓ ━━'},
+    {time:'11:35-11:55',title:'语文',detail:'阅读理解1篇《一本》第4篇'},
+    {time:'12:00-12:15',title:'英语',detail:'五上单词U1预习'},
+    {time:'12:15-12:30',title:'口算',detail:'《口算大通关》乘除法20题'},
+    {time:'12:30-13:00',title:'弹性',detail:'错题本+课外阅读'}
+  ],night:'🌙 批改分配律 / 口算批改 / 准备明天微课'},
+  '2026-08-04':{phase:'🟡',title:'周二 · 租车优化策略',blocks:[
+    {time:'10:00-10:25',title:'早读',detail:'语文朗读+英语跟读五上U2'},
+    {time:'10:30-11:30',title:'数学：租车优化（连错2次！）',detail:'租车/租船优化 · 三步法\n\n━━ 三步法口诀 ━━\n第一步：算单价（每人/每吨多少钱）\n第二步：优先用便宜的车，尽量装满\n第三步：多试一种组合，比总价！\n\n━━ 📝 诊断错题重做 ━━\n\n第1题·租车问题\n285名同学去春游。\n大客车：每辆坐50人，租金800元\n小客车：每辆坐30人，租金500元\n怎样租车最省钱？一共多少元？\n\n提示：\n① 先算单价：大800÷50=16元/人，小500÷30≈16.7元/人\n→ 大车更便宜，优先用大车！\n② 先用大车装满：285÷50=5（辆）…余35（人）\n③ 剩下的35人：1辆小车只能坐30人不够\n→ 试试5大+2小？\n→ 再试试6大？\n④ 两种方案比总价！\n\n第2题·运货问题\n有44吨货物要运走。\n大货车：每辆运8吨，运费500元\n小货车：每辆运5吨，运费350元\n怎样派车最省钱？一共多少元？\n\n提示：\n① 大500÷8=62.5元/吨，小350÷5=70元/吨\n→ 大车更便宜！\n② 先用大车：44÷8=5（辆）…余4（吨）\n③ 试试5大+1小 vs 6大 vs 4大+3小\n④ 比总价！\n\n━━ 📝 新题实战 ━━\n\n第3题·租船问题\n62人去划船。\n大船：每条坐8人，租金64元\n小船：每条坐5人，租金45元\n怎样租船最省钱？\n\n第4题·春游租车\n180名师生去春游。\n大巴：每辆坐45人，租金900元\n中巴：每辆坐25人，租金550元\n怎样租车最省钱？\n\n━━ ✅ 口诀背一遍再做 ━━\n装满便宜的 → 剩下别急着加 → 多试一种 → 比总价！\n做完自查：数字？计算？单位？红笔写已查✓'},
+    {time:'11:35-11:55',title:'语文：阅读理解',detail:'《一本》1篇'},
+    {time:'12:00-12:15',title:'英语',detail:'五上单词U1复习'},
+    {time:'12:15-12:30',title:'口算',detail:'《口算大通关》加减法20题'},
+    {time:'12:30-13:00',title:'弹性',detail:'错题本+课外阅读'}
+  ],night:'🌙 批改租车 / 口算 / 错题本'},
+  '2026-08-05':{phase:'🟡',title:'周三 · 买赠/植树',blocks:[
+    {time:'10:00-10:25',title:'早读',detail:'语文朗读15分钟\n英语：跟读四下U5单词+课文10分钟（📋老师作业·能力提升层）'},
+    {time:'10:30-11:30',title:'数学：买赠/植树/添括号（策略问题专项）',detail:'━━━━ 第1步：看视频 约15分钟 ━━━━\n打开平板 → "智慧中小学"App\n→ 课程教学 → 学生自主学习 → 小学 → 四年级 → 下册 → 数学 → 人教版\n→ 第9单元"数学广角—鸡兔同笼" → 看第1课时\n📌 学什么：列表尝试法、假设法——和今天的买赠/植树是一个思路\n\n━━━━ 第2步：买赠问题 约15分钟 ━━━━\n📝 错题回顾（卷2四-3）：书店买5本送1本，每本25.8元，买12本最少花多少钱？\n口诀：先算组数 → 再算实付\n① 5+1=6本是一组  ② 12÷6=2组  ③ 2组×5本=10本需要付钱  ④ 10×25.8=258元\n⚠️ 新题练习（草稿纸上做，审题四步法！）：\n第1题："超市买4盒牛奶送1盒，每盒6.5元，买20盒最少花多少钱？"\n第2题：《5·3天天练》四下 第9单元"解决问题"页 买赠类1-2题\n\n━━━━ 第3步：植树/分配问题 约15分钟 ━━━━\n📝 错题回顾（卷3 B-2）：师生100人植树，师每人4棵，生每4人1棵，共100棵，师生各几人？\n口诀：先猜一个数 → 算结果 → 调整 → 直到刚好！\n试：师20人→20×4=80棵  生80人→80÷4=20棵  合计=100棵 ✓\n⚠️ 新题练习（草稿纸上列表尝试）：\n《5·3天天练》四下 第9单元"鸡兔同笼"页 第1-3题\n\n━━━━ 第4步：添括号 约10分钟 ━━━━\n📝 错题回顾（卷3 B-1(2)）：在 6000÷75-60+10 中添括号，使结果最大\n关键：让除数尽可能小！\n不加括号：6000÷75-60+10 = 30\n加括号后：6000÷[75-(60+10)] = 6000÷5 = 1200 ✓\n⚠️ 新题练习：《5·3天天练》四下 第9单元"括号"页 第1-2题\n\n━━━━ 第5步：自查+错题本 约5分钟 ━━━━\n✅ 每题旁红笔写"已查✓"  ✅ 自查三问：数字？计算？单位？\n✅ 错题贴黄色标签，写一句"正确解法是……"\n⚠️ 全程审题四步法：圈数→圈词→写关系→回读'},
+    {time:'11:35-11:55',title:'语文',detail:'阅读理解1篇《一本》第5篇'},
+    {time:'12:00-12:20',title:'英语',detail:'📋老师作业·能力提升层\n① 四下U5四会单词默写→自批订正（错词订正2遍）\n② 抄写U5的2个核心句型（每句1遍，注意大小写+标点）\n③ 完成后朗读一遍，确认能认读'},
+    {time:'12:20-12:35',title:'口算',detail:'《口算大通关》四则混合20题'},
+    {time:'12:35-13:00',title:'弹性',detail:'错题本+课外阅读'}
+  ],night:'🌙 批改策略题 / 口算 / 错题本'},
+  '2026-08-06':{phase:'🟡',title:'周四 · 三视图+画高（动手课）',blocks:[
+    {time:'10:00-10:25',title:'早读',detail:'语文朗读15分钟\n英语：跟读四下U5课文10分钟（📋老师作业·能力提升层）'},
+    {time:'10:30-11:30',title:'数学：三视图+画高（动手课）',detail:'━━━━ 第1步：看视频 约15分钟 ━━━━\n打开平板 → "智慧中小学"App\n→ 课程教学 → 学生自主学习 → 小学 → 四年级 → 下册 → 数学 → 人教版\n→ 第2单元"观察物体（二）" → 看第1课时\n📌 学什么：从正面/上面/左面看立体图形，看到的是什么形状？\n\n━━━━ 第2步：动手拼搭 + 画三视图 约20分钟 ━━━━\n🧱 准备：积木/小方块（没有的话用橡皮/纸团代替）\n\n📝 拼搭1：4个小方块\n第1层：并排2个 ■■\n第2层：在第1个上面叠1个 ■\n第3层：再在上面叠1个 ■\n→ 从正面看是什么形状？画在草稿纸上\n→ 从上面看是什么形状？画在草稿纸上\n→ 从右面看是什么形状？画在草稿纸上\n\n📝 拼搭2：4个小方块\n第1层：并排3个 ■■■\n第2层：第1个和第3个上面各放1个 ■□■\n→ 从正面看、上面看、左面看各画出来\n\n⚠️ 关键：某个方向"挡住的部分看不到"！\n→ 画的是"看到的形状"，不是"一共有几个方块"\n\n━━━━ 第3步：诊断错题回顾 约5分钟 ━━━━\n📝 错题（卷1一-4）：拿走组合体中的一个正方体，从正面看形状变了\n→ 关键：站在正面看，被挡住的方块拿走不影响正面形状！\n→ 重新拼出来试：挨个拿走①号和④号，看正面形状变没变\n\n━━━━ 第4步：画高专项训练 约15分钟 ━━━━\n📐 准备：三角板+铅笔+草稿纸\n\n🔺 画高四步法（背下来！）：\n① 选底边 → ② 找对顶点（底边对面的顶点）\n③ 放三角板：直角边贴紧底边，另一直角边对准顶点\n④ 从顶点向底边画虚线 → 标直角符号"┐"\n\n⚠️ 画3种三角形的所有高（每个三角形都画！）：\n\n🔺 锐角三角形：3条高都在三角形里面 ✓\n\n🔺 直角三角形：\n→ 以一条直角边为底，另一条直角边就是高！\n→ 以斜边为底，高在三角形里面\n→ 所以：2条高=直角边，第3条在内部\n\n🔺 钝角三角形 ⚠️ 最难！\n→ 先画一个钝角三角形（一个角 > 90°）\n→ 以钝角对边为底：高在三角形里面\n→ 以钝角的一条边为底：高跑到外面去了！\n→ 方法：延长底边 → 从顶点向延长线画垂线 → 虚线+直角符号\n\n📝 诊断错题（卷2二-2）：\n"钝角三角形有（ ）条高在三角形外部？"\n→ 答案：2条（钝角的两条短边为底时，高在外面）\n\n━━━━ 第5步：自查+收尾 约5分钟 ━━━━\n✅ 每个三视图旁红笔写"已查✓"\n✅ 每个三角形的高检查：虚线？直角符号？\n✅ 自查三问：方向对了？虚线？标了直角？\n✅ 错题贴黄色标签\n⚠️ 全程审题四步法：圈数→圈词→写关系→回读'},
+    {time:'11:35-11:55',title:'语文：阅读理解',detail:'《一本》1篇'},
+    {time:'12:00-12:25',title:'英语',detail:'📋老师作业·能力提升层\n① 仿写U5的2组句型（替换关键词，每组写2句）\n② 口头复述U5一个对话（≥3句话，说给爸爸听就行）\n③ 翻看笔记，轻松回顾'},
+    {time:'12:25-12:40',title:'口算',detail:'《口算大通关》小数20题'},
+    {time:'12:40-13:00',title:'弹性',detail:'错题本+课外阅读'}
+  ],night:'🌙 检查画高（直角符号+虚线）/ 口算 / 错题本'},
+  '2026-08-07':{phase:'🟡',title:'周五 · 第二阶段验收',blocks:[
+    {time:'10:00-10:25',title:'早读',detail:'语文朗读15分钟\n英语：跟读四下U6单词10分钟（📋老师作业·能力提升层）'},
+    {time:'10:30-11:30',title:'数学：第二阶段验收',detail:'《黄冈达标卷》四下挑运算律+租车+策略+图形部分重做\n目标≥80分'},
+    {time:'11:35-11:55',title:'语文',detail:'阅读理解1篇《一本》第6篇'},
+    {time:'12:00-12:20',title:'英语',detail:'📋老师作业·能力提升层（今日轻量·数学验收日）\n① 四下U6四会单词默写→自批订正（错词订正2遍）\n② 抄写U6的2个核心句型（每句1遍）'},
+    {time:'12:20-12:35',title:'口算',detail:'《口算大通关》综合20题'},
+    {time:'12:35-13:00',title:'弹性',detail:'两周错题大回顾'}
+  ],night:'🌙 批改验收 / 统计黄色标签消灭数 / 填消灭表 / 周末休息'}
+};
+
+// 第三阶段模板（英语按老师作业·能力提升层设计）
+function getP3(dateStr){
+  const d = new Date(dateStr);
+  const isWeek5 = d >= new Date(2026,7,10) && d < new Date(2026,7,17);
+  const dow = d.getDay();
+  // 数学
+  const mathTopics = isWeek5 ? ['小数×整数','小数×小数','积的近似数','连乘/简便运算','位置（数对）'] : ['除数是整数','除数是小数','商的近似数','循环小数','可能性'];
+  const mathTopic = mathTopics[dow-1] || mathTopics[0];
+  // 英语：五上预习U1-U3，能力提升层按天分配
+  const engMap = {
+    '2026-08-10':'📋老师作业·能力提升层\n① 五上U1四会单词识记（见词知意，不要求拼写）\n② 朗读U1课文，圈出不认识的词\n③ 梳理U1核心句型（抄下来，每句型读3遍）',
+    '2026-08-11':'📋老师作业·能力提升层\n① 复习U1核心句型\n② 替换关键词造句（每句型造2句，写下来）\n③ 口头翻译U1课文大意（一段一段翻中文）',
+    '2026-08-12':'📋老师作业·能力提升层\n① 五上U2四会单词识记（见词知意，不要求拼写）\n② 朗读U2课文，圈出不认识的词\n③ 梳理U2核心句型（抄下来，每句型读3遍）',
+    '2026-08-13':'📋老师作业·能力提升层\n① 复习U2核心句型\n② 替换关键词造句（每句型造2句，写下来）\n③ 口头翻译U2课文大意（一段一段翻中文）',
+    '2026-08-14':'📋老师作业·素养拓展层 ✨\n① 选U1或U2一个话题，写一篇小短文（≥30词）\n② 提示：用学过的句型，先列3个要点再写\n③ 写完后自己朗读检查，改不通顺的地方',
+    '2026-08-17':'📋老师作业·能力提升层\n① 五上U3四会单词识记（见词知意，不要求拼写）\n② 朗读U3课文，圈出不认识的词\n③ 梳理U3核心句型（抄下来，每句型读3遍）',
+    '2026-08-18':'📋老师作业·能力提升层\n① 复习U3核心句型\n② 替换关键词造句（每句型造2句，写下来）\n③ 口头翻译U3课文大意（一段一段翻中文）',
+    '2026-08-19':'📋老师作业·素养拓展层 ✨\n① 选U3一个话题，写一篇小短文（≥30词）\n② 翻看U1-U3句型笔记，试着用上学过的表达\n③ 写完后朗读检查',
+    '2026-08-20':'📋老师作业·能力提升层\n① U1-U3四会单词总复习（遮挡中文，自测见词知意）\n② U1-U3核心句型总复习（看中文说英文）\n③ 标记还不熟的单词/句型，开学重点听',
+    '2026-08-21':'📋老师作业·素养拓展层 ✨\n① 选U1-U3中最喜欢的一课，用平板给课文配音（模仿原音语气）\n② 翻看英语笔记，回顾这个暑假学了什么\n③ 🎉 暑假英语学习完成！'
+  };
+  const engTask = engMap[dateStr] || '五上单词认读';
+  return {phase:'🟢',title:(isWeek5?'第5周':'第6周')+' · '+mathTopic,blocks:[
+    {time:'10:00-10:25',title:'早读',detail:'语文朗读+英语跟读五上'},
+    {time:'10:30-11:30',title:'数学：'+mathTopic,detail:'①看智慧中小学五上微课15分钟\n②做《5·3》五上基础题（不做提高题）20分钟\n③做不出来→标记"开学重点听"'},
+    {time:'11:35-11:55',title:'语文',detail:isWeek5?'阅读理解1篇':'五年级阅读'},
+    {time:'12:00-12:20',title:'英语',detail:engTask},
+    {time:'12:20-12:35',title:'口算',detail:'《口算大通关》1页 20题'},
+    {time:'12:35-13:00',title:'弹性',detail:'错题本+课外阅读'}
+  ],night:'🌙 预习阶段不纠错，标记"开学重点听"即可'};
+}
+
+// 周六模板（第一阶段专用）
+function getSaturday(dateStr){
+  const d = new Date(dateStr);
+  if(d.getDay()!==6) return null;
+  // 7/25=本周六已在ALL_PLANS里
+  // 8/1=第一阶段结束后的周六→休息
+  // 8/8=第二阶段后的周六→休息
+  // 后面周六都休息
+  return {phase:'⬜',title:'🏖️ 休息日',blocks:[{time:'全天',title:'自由玩耍！',detail:'周末休息，不安排学习任务'}],night:''};
+}
+
+// 8/24验收日
+ALL_PLANS['2026-08-24'] = {phase:'🏁',title:'暑假验收日',blocks:[
+  {time:'10:00-10:25',title:'早读',detail:'语文朗读+英语跟读照常'},
+  {time:'10:30-11:30',title:'数学：《黄冈达标卷》四下综合卷（四）',detail:'最后一张没做过！\n⚠️审题四步法+自查三问全程执行\n目标≥85分，粗心≤2道'},
+  {time:'11:35-11:55',title:'语文',detail:'所有错字汇总听写'},
+  {time:'12:00-12:15',title:'英语',detail:'📋老师作业·验收\n① 爸爸随机指U1-U3单词，孩子说中文（见词知意）\n② 翻看3篇小短文+句型笔记\n③ 标记开学重点听的单词/句型'},
+  {time:'12:15-12:30',title:'口算',detail:'《口算大通关》综合20题'},
+  {time:'12:30-13:00',title:'弹性',detail:'和爸爸一起看暑假数据！'}
+],night:'🌙 批改验收→看5周数据→写"开学提醒便签"贴文具盒'};
+
+function getPlan(dateStr){
+  if(ALL_PLANS[dateStr]) return ALL_PLANS[dateStr];
+  if(P2[dateStr]) return P2[dateStr];
+  const d = new Date(dateStr);
+  // 周末
+  if(d.getDay()===0||d.getDay()===6) return {phase:'⬜',title:'🏖️ 休息日',blocks:[{time:'全天',title:'自由玩耍！',detail:'周末休息，不安排学习任务'}],night:''};
+  // 第三阶段 8/10-8/21
+  if(dateStr>='2026-08-10' && dateStr<='2026-08-21') return getP3(dateStr);
+  // 默认
+  return {phase:'🔴',title:'学习日',blocks:[
+    {time:'10:00-10:25',title:'早读',detail:'语文朗读+英语跟读'},
+    {time:'10:30-11:30',title:'数学',detail:'《5·3天天练》+智慧中小学微课\n⚠️审题四步法：①圈数②圈词③写关系④回读'},
+    {time:'11:35-11:55',title:'语文',detail:'阅读理解1篇'},
+    {time:'12:00-12:15',title:'英语',detail:'单词认读/课文跟读'},
+    {time:'12:15-12:30',title:'口算',detail:'《口算大通关》1页20题'},
+    {time:'12:30-13:00',title:'弹性',detail:'错题本+课外阅读'}
+  ],night:''};
+}
+
+// ========== 初始化 ==========
+document.getElementById('dayBadge').textContent = today.getFullYear()+'年'+(today.getMonth()+1)+'月'+today.getDate()+'日 星期'+dayNames[today.getDay()];
+document.getElementById('todayDate').textContent = '（'+(today.getMonth()+1)+'月'+today.getDate()+'日 星期'+dayNames[today.getDay()]+'）';
+
+let phaseTag = '';
+const PHASES = [{end:'2026-07-31',color:'🔴',name:'第一阶段',desc:'粗心整治'},{end:'2026-08-07',color:'🟡',name:'第二阶段',desc:'概念补漏'},{end:'2026-08-21',color:'🟢',name:'第三阶段',desc:'五上预习'},{end:'2026-08-24',color:'🏁',name:'验收日',desc:''}];
+for(let p of PHASES){if(todayStr<=p.end){phaseTag=p.color+' '+p.name+'：'+p.desc;break;}}
+if(!phaseTag) phaseTag='🏁 验收日';
+document.getElementById('phaseTag').textContent = phaseTag;
+
+// ========== 今日任务列表 ==========
+let plan = getPlan(todayStr);
+const tl = document.getElementById('taskList');
+if(plan.blocks && plan.blocks.length>0){
+  tl.innerHTML = plan.blocks.map((b,i)=>`
+    <li><input type="checkbox" id="task${i}" onchange="saveChecks()"><span class="time">${b.time}</span><span class="tc">${b.title}${b.detail?`<span class="tsub">${b.detail.replace(/\n/g,'<br>')}</span>`:''}</span></li>
+  `).join('');
+}else{
+  tl.innerHTML = '<li style="justify-content:center;padding:20px;color:#999">🏖️ 今天休息~</li>';
+}
+
+// ========== 每日详情 ==========
+function buildDayNav(){
+  const s = new Date(2026,6,24), e = new Date(2026,7,24);
+  let html=''; const d=new Date(s);
+  while(d<=e){
+    const ds=fmtDate(d), we=d.getDay()===0||d.getDay()===6, isT=ds===todayStr;
+    html+=`<div class="day-btn${isT?' active':''}" onclick="showDayDetail('${ds}')">${d.getMonth()+1}/${d.getDate()}周${dayNames[d.getDay()]}${we?'🏖️':''}</div>`;
+    d.setDate(d.getDate()+1);
+  }
+  document.getElementById('dayNav').innerHTML=html;
+}
+function showDayDetail(ds){
+  const p=getPlan(ds), d=new Date(ds), dl=d.getMonth()+1+'月'+d.getDate()+'日 星期'+dayNames[d.getDay()];
+  document.querySelectorAll('#dayNav .day-btn').forEach(b=>b.classList.remove('active'));
+  const idx=Math.floor((d-new Date(2026,6,24))/(86400000));
+  document.querySelectorAll('#dayNav .day-btn')[Math.max(0,idx)]?.classList.add('active');
+  let h=`<h3>${p.phase} ${dl} —— ${p.title}</h3>`;
+  if(p.blocks)p.blocks.forEach(b=>{h+=`<div class="time-block"><div class="tl">${b.time} │ ${b.title}</div><div class="td">${(b.detail||'').replace(/\n/g,'<br>')}</div></div>`;});
+  if(p.night)h+=`<div class="night-box"><b>🌙 今晚家长</b><br>${p.night.replace(/\n/g,'<br>')}</div>`;
+  document.getElementById('dayContent').innerHTML=h;
+}
+buildDayNav();showDayDetail(todayStr);
+
+// ========== 周总览 ==========
+(function(){
+  const sow=new Date(today);sow.setDate(today.getDate()-today.getDay()+1);
+  let h='';
+  for(let i=0;i<7;i++){
+    const d=new Date(sow);d.setDate(sow.getDate()+i);
+    const ds=fmtDate(d), p=getPlan(ds);
+    h+=`<div style="padding:5px 0;border-bottom:1px dashed #eee;font-size:13px"><b>${p.phase} ${d.getMonth()+1}/${d.getDate()}周${dayNames[d.getDay()]}</b>　${p.title}</div>`;
+  }
+  document.getElementById('weekPlan').innerHTML=h;
+})();
+
+// ========== 交互 ==========
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  const idx=['today','focus','detail','test','check','week','english'].indexOf(name);
+  if(idx>=0)document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+document.querySelectorAll('.tab').forEach((t,i)=>{t.onclick=function(){switchTab(['today','focus','detail','test','check','week','english'][i])}});
+
+function saveChecks(){
+  const d={};document.querySelectorAll('#taskList input[type=checkbox]').forEach((c,i)=>{d['t_'+todayStr+'_'+i]=c.checked});try{localStorage.setItem('ss_checks',JSON.stringify(d))}catch(e){};updateParentData()}
+function loadChecks(){try{const d=JSON.parse(localStorage.getItem('ss_checks')||'{}');document.querySelectorAll('#taskList input[type=checkbox]').forEach((c,i)=>{if(d['t_'+todayStr+'_'+i])c.checked=true})}catch(e){}}
+
+function rateDay(n){document.getElementById('rate3').style.opacity=n===3?'1':'0.3';document.getElementById('rate2').style.opacity=n===2?'1':'0.3';document.getElementById('rate1').style.opacity=n===1?'1':'0.3';try{localStorage.setItem('ss_rate_'+todayStr,n)}catch(e){}}
+try{const s=localStorage.getItem('ss_rate_'+todayStr);if(s)rateDay(parseInt(s))}catch(e){}
+
+function saveSelfCheck(){
+  ['selfFound','answerFound','redFixed','yellowFixed'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)try{localStorage.setItem('ss_'+id+'_'+todayStr,el.value)}catch(e){}
+  });
+}
+function loadSelfCheck(){
+  ['selfFound','answerFound','redFixed','yellowFixed'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    try{const v=localStorage.getItem('ss_'+id+'_'+todayStr);if(v)el.value=v}catch(e){}
+    el.onchange=function(){try{localStorage.setItem('ss_'+id+'_'+todayStr,this.value)}catch(e){}};
+  });
+}
+
+function updateParentData(){const c=document.querySelectorAll('#taskList input[type=checkbox]');let n=0;c.forEach(x=>{if(x.checked)n++});document.getElementById('dataDone').textContent=n+'/'+(c.length||6);document.getElementById('dataCareless').textContent=(document.getElementById('selfFound')?.value||0)+'+'+(document.getElementById('answerFound')?.value||0)+'个';updateExecRate()}
+
+// ========== 极简查验 ==========
+function updateExecRate(){
+  const t=parseInt(document.getElementById('totalQ')?.value)||0;
+  const m=parseInt(document.getElementById('markedQ')?.value)||0;
+  const rate=t>0?Math.round(m/t*100):0;
+  const el=document.getElementById('execRate');if(el)el.textContent=rate+'%';
+  const el2=document.getElementById('dataRate');if(el2)el2.textContent=rate+'%';
+  const v=document.getElementById('execVerdict');
+  if(v){
+    if(t===0)v.innerHTML='<span style="color:#888">📝 还没填数据</span>';
+    else if(rate>=80)v.innerHTML='<span style="color:#27ae60">🟢 习惯在形成！继续加油</span>';
+    else if(rate>=50)v.innerHTML='<span style="color:#e67e22">🟡 明天做前先背四步法</span>';
+    else v.innerHTML='<span style="color:#c0392b">🔴 需要盯一下了</span>';
+  }
+}
+function saveMiniCheck(){
+  ['totalQ','markedQ','oralScore','diagScore','diagCareless','phase2Val','finalVal'].forEach(id=>{
+    const el=document.getElementById(id);if(el)try{localStorage.setItem('ss_'+id+'_'+todayStr,el.value)}catch(e){}
+  });
+  updateExecRate();
+}
+function loadMiniCheck(){
+  ['totalQ','markedQ','oralScore','diagScore','diagCareless','phase2Val','finalVal'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    try{const v=localStorage.getItem('ss_'+id+'_'+todayStr);if(v)el.value=v}catch(e){}
+    el.onchange=function(){try{localStorage.setItem('ss_'+id+'_'+todayStr,this.value)}catch(e){};updateExecRate()};
+  });
+  // phase2Val and finalVal are global (not per-day)
+  ['phase2Val','finalVal'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    try{const v=localStorage.getItem('ss_'+id);if(v)el.value=v}catch(e){}
+  });
+  updateExecRate();
+}
+
+// ========== 小测交卷检查 ==========
+function saveTestChecks(){
+  const d={};for(let i=1;i<=8;i++){const el=document.getElementById('tc'+i);if(el)d['tc'+i+'_'+todayStr]=el.checked}
+  try{localStorage.setItem('ss_testchecks',JSON.stringify(d))}catch(e){}
+}
+function loadTestChecks(){
+  try{const d=JSON.parse(localStorage.getItem('ss_testchecks')||'{}');for(let i=1;i<=8;i++){const el=document.getElementById('tc'+i);if(el&&d['tc'+i+'_'+todayStr])el.checked=true}}catch(e){}
+}
+
+function savePC(){['pc1','pc2','pc3','pc4','pc5','pc6'].forEach(id=>{try{localStorage.setItem('ss_'+id+'_'+todayStr,document.getElementById(id).checked)}catch(e){}});updatePCCount()}
+function loadPC(){['pc1','pc2','pc3','pc4','pc5','pc6'].forEach(id=>{try{const v=localStorage.getItem('ss_'+id+'_'+todayStr);if(v==='true')document.getElementById(id).checked=true}catch(e){}});updatePCCount()}
+function updatePCCount(){let n=0;['pc1','pc2','pc3','pc4','pc5','pc6'].forEach(id=>{if(document.getElementById(id).checked)n++});document.getElementById('dataPC').textContent=n+'/6'}
+
+function loadPhaseVals(){['phase1','phase2','final'].forEach(k=>{const el=document.getElementById(k+'Val');const v=localStorage.getItem('ss_'+k);if(v)el.value=v;el.onchange=function(){try{localStorage.setItem('ss_'+k,this.value)}catch(e){}}})}
+
+// ========== 英语补缺卡片 ==========
+function saveEngChecks(){
+  const d={};document.querySelectorAll('.eng-check').forEach((c,i)=>{d['ec'+i]=c.checked});
+  try{localStorage.setItem('ss_engchecks',JSON.stringify(d))}catch(e){}
+  updateEngEmoji();
+}
+function loadEngChecks(){
+  try{const d=JSON.parse(localStorage.getItem('ss_engchecks')||'{}');document.querySelectorAll('.eng-check').forEach((c,i)=>{if(d['ec'+i])c.checked=true})}catch(e){}
+}
+function updateEngEmoji(){
+  const boxes=document.querySelectorAll('.eng-check');
+  const done=[...boxes].filter(b=>b.checked).length;
+  const total=boxes.length;
+  const el=document.getElementById('engEmoji');
+  if(!el)return;
+  if(done===0)el.textContent='😴';
+  else if(done<=2)el.textContent='💪 '+done+'/'+total;
+  else if(done<=4)el.textContent='🔥 '+done+'/'+total;
+  else if(done<total)el.textContent='🚀 '+done+'/'+total;
+  else el.textContent='🎉 全部搞定！';
+}
+
+loadChecks();loadPC();loadPhaseVals();loadSelfCheck();loadMiniCheck();loadTestChecks();loadEngChecks();updateEngEmoji();updateParentData();
+
+// 显示同步说明（非首次访问时）
+if(localStorage.getItem('ss_visited')){document.getElementById('syncBox').style.display='block'}else{localStorage.setItem('ss_visited','1')}
+</script>
+
+</body>
+</html>
