@@ -175,5 +175,26 @@ function buildReview(){
 function buildMetrics(){var stats={done:0,green:0,red:0};for(var i=0;i<7;i++){var d=new Date(now),n=d.getDay()||7;d.setDate(d.getDate()-n+1+i);var s=localStorage.getItem('term_mathStatus_'+fmt(d));if(s){stats.done++;if(s==='green')stats.green++;if(s==='red')stats.red++}}document.getElementById('mDone').textContent=stats.done;document.getElementById('mGreen').textContent=stats.green;document.getElementById('mRed').textContent=stats.red;document.getElementById('mRate').textContent=stats.done?Math.round(stats.green/stats.done*100)+'%':'—'}
 buildToday();buildReview();buildMetrics();
 </script>
+
+<script>
+// Dated weekend homework: 2026-09-05/06; no extra daily problem.
+(function(){
+ if(ds!=='2026-09-05' && ds!=='2026-09-06')return;
+ var host=document.getElementById('today');
+ host.insertAdjacentHTML('afterbegin',"<div class=\"card notice\" id=\"weekend-20260905\">\n<h2>9月5—6日 · 学校周末作业</h2>\n<p>这张卡就是本周学校作业。数学18题写在<strong>家庭作业3号本</strong>；周六完成后，周日只检查、订正和复盘，不重复做一遍。</p>\n<h3>数学｜18道小数乘整数</h3>\n<p class=\"small\">以下为按本周知识点编排的练习，并非课本原题。分3组、每组6题；可以分时完成。建议列竖式，先抄题和题号，再按整数乘法计算，最后点小数点。检查抄数、进位、第二行位置及积的小数点。</p>\n<div class=\"grid2\"><div style=\"padding:6px\">1. 2.4 × 3 ＝</div><div style=\"padding:6px\">2. 0.7 × 8 ＝</div><div style=\"padding:6px\">3. 5.6 × 4 ＝</div><div style=\"padding:6px\">4. 3.25 × 2 ＝</div><div style=\"padding:6px\">5. 0.84 × 5 ＝</div><div style=\"padding:6px\">6. 12.6 × 7 ＝</div><div style=\"padding:6px\">7. 4.08 × 6 ＝</div><div style=\"padding:6px\">8. 0.35 × 14 ＝</div><div style=\"padding:6px\">9. 2.75 × 12 ＝</div><div style=\"padding:6px\">10. 6.04 × 15 ＝</div><div style=\"padding:6px\">11. 0.128 × 25 ＝</div><div style=\"padding:6px\">12. 9.09 × 18 ＝</div><div style=\"padding:6px\">13. 14.25 × 24 ＝</div><div style=\"padding:6px\">14. 0.506 × 32 ＝</div><div style=\"padding:6px\">15. 23.4 × 105 ＝</div><div style=\"padding:6px\">16. 7.08 × 40 ＝</div><div style=\"padding:6px\">17. 0.025 × 48 ＝</div><div style=\"padding:6px\">18. 18.75 × 16 ＝</div></div>\n<details style=\"margin-top:10px\"><summary>完成并自查后展开 · 家长核对答案</summary><p>1. 7.2　；2. 5.6　；3. 22.4　；4. 6.5　；5. 4.2　；6. 88.2　；7. 24.48　；8. 4.9　；9. 33　；10. 90.6　；11. 3.2　；12. 163.62　；13. 342　；14. 16.192　；15. 2457　；16. 283.2　；17. 1.2　；18. 300</p></details>\n<label class=\"task\"><input class=\"check weekend-check\" data-k=\"math\" type=\"checkbox\">数学18题已做在3号本，并自查订正</label>\n<h3>语文｜选一本读过的书写读后感</h3>\n<p>图片中的可选书目：《陀螺与少年》《寻觅精灵谷》《数学公主探案记·智破国宝案》《了不起的大作家·冰波精品集》《科学家大讲堂·“嫦娥”征程》。</p>\n<p>① 选自己确实读过、印象最深的一本。<br>② 先口头说清：哪个情节或内容最打动我？为什么？<br>③ 写提纲：书名与主要内容（简要）→一个具体情节或知识点→自己的感受→联系自己的经历或行动。<br>④ 按提纲用自己的话写，感受部分多写一点，不只复述故事。<br>⑤ 通读检查：书名、错别字、标点、段落，是否写了真实感受。</p>\n<p class=\"small\">现有通知未说明字数、书写本或提交方式，有补充通知时按老师要求。图片中的“阅读与思考”不另外布置；不用重新读完所有书，也不用照抄范文。</p>\n<label class=\"task\"><input class=\"check weekend-check\" data-k=\"chinese\" type=\"checkbox\">读后感已完成并通读检查</label>\n<h3>英语｜每天打开钉钉核对</h3>\n<p>本次截图文字：<strong>预习二单元；听力口语训练；复习课本第4页。</strong><br>① 先看钉钉当天任务及提交要求。<br>② 按老师指定音频听、跟读，完成口语训练。<br>③ 复习课本第4页：指读、说大意，不熟的句子做标记。<br>④ 预习第二单元：先看主题和词句，圈出疑问。<br>⑤ 按钉钉要求完成提交。</p>\n<p class=\"small\">这里不能自动读取钉钉更新。截图中的手写照片是否要求仿写，现有文字不能确认；有明确要求才照做。周六、周日分别核对，不沿用昨日任务。</p>\n<label class=\"task\"><input class=\"check weekend-check\" data-k=\"english-sat\" type=\"checkbox\">周六英语已按钉钉完成</label>\n<label class=\"task\"><input class=\"check weekend-check\" data-k=\"english-sun\" type=\"checkbox\">周日英语已按钉钉完成</label>\n<h3>交给家长一次检查</h3>\n<p>数学重点看小数点、进位和含0的题；语文看具体内容与真实感受；英语核对当天钉钉完成情况。周日从这18题中挑1—3道错题重做；若全对，口头讲一道题的计算方法即可。</p>\n<label class=\"task\"><input class=\"check weekend-check\" data-k=\"parent\" type=\"checkbox\">家长已检查，仍不会的问题已记录</label>\n<p class=\"small\">本卡勾选周六、周日共用，保存在当前浏览器。无需重复完成已勾选的作业。</p></div>");
+ var notice=host.querySelector('.notice:not(#weekend-20260905)');
+ if(notice)notice.textContent='本周末以学校语数英家庭作业为主，按上方作业卡完成，再交家长检查。';
+ document.getElementById('todayTitle').textContent='本周末：按上方作业卡执行';
+ document.getElementById('todayTasks').textContent='数学只做老师要求的18题；周日完成剩余作业并复盘，不重复加做。';
+ document.getElementById('math').innerHTML='<div class="card"><h2>本周末数学已安排</h2><p>18道小数乘整数在“今日”顶部作业卡，写在3号本。本周末不再额外布置每日一题。</p></div>';
+ var pc=document.querySelectorAll('.parent-check')[3];
+ if(pc && pc.parentElement)pc.parentElement.querySelector('span').innerHTML='<b>学校数学18题已完成并检查</b><span class="sub">本周末无需额外每日一题</span>';
+ document.querySelectorAll('.weekend-check').forEach(function(el){
+ var k='term_weekend_20260905_'+el.dataset.k;
+ try{el.checked=localStorage.getItem(k)==='true'}catch(e){}
+ el.onchange=function(){try{localStorage.setItem(k,String(el.checked))}catch(e){}};
+ });
+})();
+</script>
 </body>
 </html>
