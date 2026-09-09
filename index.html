@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes">\n<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">\n<meta http-equiv="Pragma" content="no-cache">\n<meta http-equiv="Expires" content="0">
 <title>五年级学习助手</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f1ec;color:#30333a;font-family:"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.65}
@@ -195,6 +195,23 @@ buildToday();buildReview();buildMetrics();
  el.onchange=function(){try{localStorage.setItem(k,String(el.checked))}catch(e){}};
  });
 })();
+</script>
+
+<script>
+// 页面跨天后自动刷新：平板长期保留标签时，返回页面也会切到当天任务。
+function refreshOnNewDay(){
+  var current=fmt(new Date());
+  if(current!==ds){
+    var url=new URL(window.location.href);
+    url.searchParams.set('day',current);
+    window.location.replace(url.toString());
+  }
+}
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible')refreshOnNewDay();
+});
+window.addEventListener('pageshow',refreshOnNewDay);
+setInterval(refreshOnNewDay,60000);
 </script>
 </body>
 </html>
