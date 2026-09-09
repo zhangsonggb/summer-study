@@ -158,8 +158,8 @@ function saveText(id){localStorage.setItem(key(id),document.getElementById(id).v
 ['learnMath','learnOther','unclear','parentNote'].forEach(function(id){var e=document.getElementById(id);e.value=localStorage.getItem(key(id))||'';e.onchange=function(){saveText(id)}})
 ['weekProblems','weekResult'].forEach(function(id){var e=document.getElementById(id);e.value=localStorage.getItem('term_'+id+'_week_'+weekKey())||'';e.onchange=function(){localStorage.setItem('term_'+id+'_week_'+weekKey(),e.value)}})
 function weekKey(){var d=new Date(now),n=d.getDay()||7;d.setDate(d.getDate()-n+1);return fmt(d)}
-function loadDailyChecks(){var v=JSON.parse(localStorage.getItem(key('checks'))||'{}');document.querySelectorAll('.daily-check').forEach(function(c){c.checked=!!v[c.dataset.i];c.onchange=function(){v[c.dataset.i]=c.checked;localStorage.setItem(key('checks'),JSON.stringify(v))}})}
-var pv=JSON.parse(localStorage.getItem(key('parentChecks'))||'{}');document.querySelectorAll('.parent-check').forEach(function(c,i){c.checked=!!pv[i];c.onchange=function(){pv[i]=c.checked;localStorage.setItem(key('parentChecks'),JSON.stringify(pv))}});
+function loadDailyChecks(){var v={};try{v=JSON.parse(localStorage.getItem(key('checks'))||'{}')}catch(e){v={}};document.querySelectorAll('.daily-check').forEach(function(c){c.checked=!!v[c.dataset.i];c.onchange=function(){v[c.dataset.i]=c.checked;localStorage.setItem(key('checks'),JSON.stringify(v))}})}
+var pv={};try{pv=JSON.parse(localStorage.getItem(key('parentChecks'))||'{}')}catch(e){pv={}};document.querySelectorAll('.parent-check').forEach(function(c,i){c.checked=!!pv[i];c.onchange=function(){pv[i]=c.checked;localStorage.setItem(key('parentChecks'),JSON.stringify(pv))}});
 
 var currentStatus=localStorage.getItem(key('mathStatus'))||'';
 document.querySelectorAll('.status').forEach(function(b){if(b.dataset.status===currentStatus)b.classList.add('on');b.onclick=function(){document.querySelectorAll('.status').forEach(function(x){x.classList.remove('on')});b.classList.add('on');localStorage.setItem(key('mathStatus'),b.dataset.status);buildMetrics()}});
@@ -212,6 +212,27 @@ document.addEventListener('visibilitychange',function(){
 });
 window.addEventListener('pageshow',refreshOnNewDay);
 setInterval(refreshOnNewDay,60000);
+</script>
+
+<script>
+function renderTodayFallback(){
+  var title=document.getElementById('todayTitle');
+  var list=document.getElementById('todayTasks');
+  if(!title||!list||list.children.length)return;
+  if(dow===3){
+    title.textContent=isQuizWeek()?'周三：复盘与巩固＋隔周小测（50—70分钟）':'周三：复盘与巩固（50—70分钟）';
+    list.innerHTML=taskHtml([
+      ['10分钟','回顾周一、周二','看学校作业和记录：学了什么、错了什么、哪些仍不懂。'],
+      ['25分钟','数学针对性巩固','选1—2个薄弱点，每个做2—4道变式题。'],
+      ['15分钟','语文或英语专项','按本周学校进度选一科重点做。'],
+      [isQuizWeek()?'20—30分钟':'10分钟',isQuizWeek()?'隔周小测':'错题再练',isQuizWeek()?'只测最近两周学过和错过的内容，测后分粗心、概念、方法。':'把仍未掌握的问题再做一次。']
+    ]);
+  }else{
+    try{buildToday()}catch(e){}
+  }
+}
+try{buildToday()}catch(e){console.error(e)}
+renderTodayFallback();
 </script>
 </body>
 </html>
