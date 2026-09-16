@@ -34,6 +34,7 @@ textarea,input[type=text]{width:100%;border:1px solid #d8ddd9;border-radius:9px;
 <section id="today" class="panel active">
 <div class="card notice"><b>今天的顺序：</b>学校作业完成 → 孩子先自查订正 → 每日数学一题 → 告诉家长 → 家长一次检查。<br><span class="small">周一、周二、周四、周五约22—25分钟；不重复做学校已经布置的同类作业。</span></div>
 <div class="card"><h2 id="todayTitle">今日固定动作</h2><div id="todayTasks"></div></div>
+<div class="card math" id="decimalPractice" hidden></div>
 <div class="card"><h2>📝 今天学了什么</h2>
 <div class="label">数学课堂内容</div><input type="text" id="learnMath" placeholder="例如：小数乘整数、位置、简易方程">
 <div class="label">语文／英语课堂重点</div><input type="text" id="learnOther" placeholder="写一个最重要的内容即可">
@@ -128,28 +129,57 @@ function buildToday(){
  ['15—20分钟','正常预习','看下周课本、圈疑问、尝试基础例题；目标是不陌生，不提前学完。'],
  ['5分钟','整理下周提醒','把仍不会的知识点写进“本周需要再练”。']
  ]}else if(dow===5){tasks=weekdayTasks.slice();tasks[4]=['2—5分钟','告诉家长＋标记周日复测题','说清本周还有什么不会，选1—3道代表题周日重做。']}
- document.getElementById('todayTitle').textContent=title;document.getElementById('todayTasks').innerHTML=taskHtml(tasks);loadDailyChecks()
+ if(ds==='2026-09-16'){
+ title='9月16日 · 周三小数乘法巩固（约35—45分钟）';
+ tasks=[
+ ['5分钟','回忆小数乘法方法','先按整数乘法算，再数两个因数一共有几位小数；积的位数不够时先补0。'],
+ ['15分钟','完成下方四道小数乘法练习','写在草稿纸或练习本上。列竖式、标小数位数；学校已做过的同题不重复做。'],
+ ['5分钟','红笔自查并订正','检查抄数、进位、积的小数点、补0和应用题单位；每题写“查✓”。'],
+ ['7分钟','每日数学一题','切换到“一题”，完成今天的小数乘法应用题；先自查再看答案。'],
+ ['5—10分钟','语英回顾＋告诉家长','按今天学校实际内容回顾语文或英语，不沿用旧作业；说清数学错在哪里，仍不会的记入复盘。']
+ ];
+ }
+ document.getElementById('todayTitle').textContent=title;document.getElementById('todayTasks').innerHTML=taskHtml(tasks);loadDailyChecks();buildDecimalPractice()
+}
+function buildDecimalPractice(){
+ var card=document.getElementById('decimalPractice');
+ if(ds!=='2026-09-16')return;
+ card.hidden=false;
+ card.innerHTML='<h2>9月16日 · 数学练习四题</h2><p class="small">五年级上学期 · 当前课堂进度：小数乘法。以下为按知识点自编的巩固题，不是老师指定原题。</p>'+
+ '<p><b>方法提醒：</b>按整数算 → 数两个因数的小数位数 → 位数不够先补0 → 点小数点。小数乘法不是把两个因数的小数点对齐。</p>'+
+ '<div class="qbox"><b>第1题 · 列竖式</b><br>2.4 × 1.3 ＝（　）<br><span class="small">在竖式旁标出两个因数一共有几位小数。</span></div>'+
+ '<div class="qbox"><b>第2题 · 位数不够补0</b><br>0.06 × 0.8 ＝（　）<br><span class="small">先算6 × 8，再检查积应有几位小数，是否需要补0。</span></div>'+
+ '<div class="qbox"><b>第3题 · 先判断，再验证</b><br>4.8 × 0.7的积比4.8大还是小？先说明理由，再列竖式计算。</div>'+
+ '<div class="qbox"><b>第4题 · 解决问题</b><br>一根彩带每米12.5元，买2.4米需要多少钱？写出算式、单位和答语。</div>'+
+ '<details><summary>四题完成并自查后展开 · 参考答案</summary><p>① 24 × 13＝312；两个因数共2位小数，所以2.4 × 1.3＝3.12。</p><p>② 6 × 8＝48；两个因数共3位小数，补0后得到0.048，不是0.48。</p><p>③ 因为0＜0.7＜1，4.8是正数，所以积比4.8小；48 × 7＝336，4.8 × 0.7＝3.36。</p><p>④ 12.5 × 2.4＝30（元）。答：买2.4米彩带需要30元。125 × 24＝3000，点两位小数得30.00＝30。</p></details>'+
+ '<p class="small">错题先自己重做，再在“复盘”记录错误原因；不另外增加小测。四题之外的每日一题在“一题”标签。</p>';
+ var notice=document.querySelector('#today > .notice');
+ notice.innerHTML='<b>今天的顺序：</b>学校作业完成 → 小数乘法四题 → 红笔自查订正 → 每日一题 → 家长一次检查。<br><span class="small">今天用这四题替代原周三的泛化加练，不再额外叠加小测；语文、英语以当天学校安排为准。</span>';
 }
 function isQuizWeek(){var start=new Date(2026,8,1),days=Math.floor((now-start)/86400000);var w=Math.floor(Math.max(0,days)/7)+1;return w%2===0}
 
+// 2026-09-16家长确认：五年级上学期当前学到小数乘法。
+// 暂只轮换当前单元；后续根据实际课堂进度更新，不自动跳到未学单元。
 var bank=[
-{f:'小数乘法·竖式与小数点',q:'列竖式计算：3.08 × 2.5。再判断积比3.08大还是小，并说明理由。',h:'先按整数308×25计算；两个因数一共有几位小数？2.5大于1。',a:'3.08×2.5＝7.70＝7.7。因为2.5＞1，所以积比3.08大。'},
-{f:'小数乘法·实际应用',q:'一盒彩笔12.8元，买3盒付50元，应找回多少钱？写出完整算式和答语。',h:'先算3盒总价，再用付款金额减总价。',a:'12.8×3＝38.4（元），50－38.4＝11.6（元）。应找回11.6元。'},
-{f:'运算定律·简便计算',q:'用简便方法计算：4.8×9.9＋0.48。必须写出为什么可以简算。',h:'0.48＝4.8×0.1，把4.8提出来。',a:'4.8×9.9＋4.8×0.1＝4.8×(9.9＋0.1)＝48。'},
-{f:'平均数·反向思考',q:'5次数学小测平均88分，前4次总分是349分，第5次多少分？',h:'先算5次总分：平均数×次数。',a:'88×5－349＝440－349＝91（分）。'},
-{f:'单位换算·面积',q:'3.6平方米等于多少平方分米？450平方厘米等于多少平方分米？写出进率。',h:'1平方米＝100平方分米；1平方分米＝100平方厘米。',a:'3.6平方米＝360平方分米；450平方厘米＝4.5平方分米。'},
-{f:'解决问题·买赠',q:'练习本买4本送1本，每本3.5元。要得到15本，最少付多少钱？',h:'15本里有几组“4＋1”？每组只付4本。',a:'15÷5＝3（组），实际付3×4＝12（本），12×3.5＝42（元）。'},
-{f:'解决问题·租车优化',q:'38人出行，大车坐10人租80元，小车坐6人租54元。至少比较3种方案，怎样租最省钱？',h:'试4大；3大＋2小；2大＋3小等，先确保座位够。',a:'4大：40座，320元；3大＋2小：42座，348元；2大＋3小：38座，322元。因此4辆大车最省，320元。'},
-{f:'审题与运算顺序',q:'计算：72＋36÷(12－6)×5。写出每一步，并圈出最容易错的地方。',h:'先括号，再乘除，最后加法。',a:'12－6＝6，36÷6＝6，6×5＝30，72＋30＝102。'},
-{f:'位置·数对',q:'小明坐在第4列第3行，用数对表示。小红的位置是(2,5)，她在第几列第几行？',h:'数对先写列，再写行。',a:'小明是(4,3)；小红在第2列第5行。'},
-{f:'规律与检查',q:'不计算完整结果，判断0.48×1.2的积比0.48大还是小；再计算验证。',h:'一个数乘大于1的数，积怎样变化？',a:'1.2＞1，所以积比0.48大。0.48×1.2＝0.576。'},
-{f:'小数除法·小数点移动',q:'列竖式计算：16.8÷0.24，并写出除数变成整数时被除数怎样变化。',h:'除数0.24扩大100倍，被除数也扩大100倍。',a:'16.8÷0.24＝1680÷24＝70。'},
-{f:'商的近似数',q:'一根25米长的绳子平均分成7段，每段约多少米？得数保留一位小数。',h:'算到百分位，再四舍五入到十分位。',a:'25÷7≈3.6（米）。'},
-{f:'可能性',q:'袋中有5个红球、3个蓝球、2个白球。任摸一个，哪种颜色可能性最大？摸到黄球是什么情况？',h:'比较数量；袋里没有的颜色能摸到吗？',a:'红球最多，摸到红球可能性最大；没有黄球，所以不可能摸到黄球。'},
-{f:'图形·三角形的高',q:'钝角三角形有几条高在三角形外部？画图说明。',h:'分别以钝角的两条边为底，需要延长底边。',a:'有2条高在三角形外部；以钝角两边为底时，高落在延长线上。'}
+{f:'小数乘法·购物应用',q:'苹果每千克8.6元，买1.5千克，付20元，应找回多少钱？写出算式、单位和答语。',h:'先用单价乘质量求总价，再用20元减总价；8.6与1.5共有2位小数。',a:'8.6 × 1.5＝12.9（元），20－12.9＝7.1（元）。答：应找回7.1元。'},
+{f:'小数乘法·竖式与小数点',q:'列竖式计算：3.08 × 2.5。标出两个因数共有几位小数，并检查积的小数点。',h:'先算308 × 25，两个因数共有3位小数；积末尾的0可以去掉。',a:'308 × 25＝7700，3.08 × 2.5＝7.700＝7.7。'},
+{f:'小数乘法·位数不够补0',q:'列竖式计算：0.04 × 0.7。小亮写成0.28，他错在哪里？',h:'4 × 7＝28，但两个因数共有3位小数，积的位数不够要先补0。',a:'0.04 × 0.7＝0.028。小亮少算了1位小数，没有补0。'},
+{f:'小数乘法·积的大小',q:'不先计算，判断5.6 × 0.9的积比5.6大还是小，说明理由，再列竖式验证。',h:'5.6是正数，另一个因数0.9大于0、小于1。',a:'积比5.6小，因为0＜0.9＜1。5.6 × 0.9＝5.04。'},
+{f:'小数乘法·小数乘整数',q:'一盒彩笔12.8元，买3盒付50元，应找回多少钱？写出算式和答语。',h:'先算3盒总价，再用付款金额减总价。',a:'12.8 × 3＝38.4（元），50－38.4＝11.6（元）。答：应找回11.6元。'},
+{f:'小数乘法·含0的竖式',q:'列竖式计算：6.04 × 1.2。写出按整数乘法计算的积，再点小数点。',h:'先算604 × 12；两个因数共有3位小数。',a:'604 × 12＝7248，6.04 × 1.2＝7.248。'},
+{f:'小数乘法·积末尾的0',q:'列竖式计算：2.5 × 1.6。小亮算出4.00，小红写4，他们的结果一样吗？为什么？',h:'先算25 × 16；小数末尾添上或去掉0，小数大小不变。',a:'25 × 16＝400，2.5 × 1.6＝4.00＝4。两人结果一样。'},
+{f:'小数乘法·纠正小数点',q:'小明写“1.25 × 0.8＝10”。请不看答案重新计算，并说明积的小数点应该点在哪里。',h:'125 × 8＝1000；两个因数共有3位小数。也可用积应小于1.25来检查。',a:'1.25 × 0.8＝1.000＝1。应从1000的右边数3位点小数点，不是10。'},
+{f:'小数乘法·长度应用',q:'每个蝴蝶结用0.75米丝带，做6个同样的蝴蝶结，5米丝带够吗？还剩多少米？',h:'先算6个共用多少米，再和5米比较。',a:'0.75 × 6＝4.5（米），4.5＜5，所以够。5－4.5＝0.5（米）。答：还剩0.5米。'},
+{f:'小数乘法·先估再算',q:'2.8 × 3.2的积大约是多少？先把两个因数估成整数，再列竖式算出准确值。',h:'估算时2.8约为3，3.2约为3；准确计算时两个因数共有2位小数。',a:'估算3 × 3＝9，所以积大约是9。准确值2.8 × 3.2＝8.96。'},
+{f:'小数乘法·两个因数小于1',q:'先判断0.48 × 0.5的积比0.48大还是小，再计算。0.5表示一半，能怎样检查？',h:'乘0.5就是求这个数的一半；两个因数共有3位小数。',a:'积比0.48小，0.48 × 0.5＝0.240＝0.24。0.24是0.48的一半。'},
+{f:'小数乘法·单价与数量',q:'葡萄每千克9.8元，买2.5千克需要多少钱？写出数量关系、算式和答语。',h:'总价＝单价 × 数量；两个因数共有2位小数。',a:'总价＝单价 × 数量，9.8 × 2.5＝24.5（元）。答：需要24.5元。'},
+{f:'小数乘法·积大于因数',q:'先判断0.36 × 1.5的积比0.36大还是小，再列竖式验证并说明理由。',h:'0.36是正数，1.5大于1；先算36 × 15，再点3位小数。',a:'积比0.36大，因为1.5＞1。0.36 × 1.5＝0.540＝0.54。'},
+{f:'小数乘法·三位小数',q:'列竖式计算：0.125 × 8。小亮写0.1，请结合按整数乘法算出的积解释他的错误。',h:'125 × 8＝1000；因数共有3位小数，不要在点小数点前删掉积末尾的0。',a:'0.125 × 8＝1.000＝1。小亮把小数点点错了，应先保留1000，再从右数3位。'}
 ];
-var dayIndex=Math.floor(now.getTime()/86400000)%bank.length,q=bank[dayIndex];
-document.getElementById('mathFocus').textContent='今日方向：'+q.f;
+var localDay=Date.UTC(now.getFullYear(),now.getMonth(),now.getDate());
+var elapsedDays=Math.floor((localDay-Date.UTC(2026,8,16))/86400000);
+var dayIndex=((elapsedDays%bank.length)+bank.length)%bank.length,q=bank[dayIndex];
+document.getElementById('mathFocus').textContent='五年级上学期 · 当前单元：小数乘法｜今日方向：'+q.f;
 document.getElementById('mathQuestion').textContent=q.q;
 document.getElementById('hint').textContent='提示：'+q.h;
 document.getElementById('answer').textContent='参考答案：'+q.a;
@@ -158,8 +188,8 @@ function toggleAnswer(){var ok=confirm('确认已经独立完成并用红笔自�
 
 function key(n){return 'term_'+n+'_'+ds}
 function saveText(id){localStorage.setItem(key(id),document.getElementById(id).value)}
-['learnMath','learnOther','unclear','parentNote'].forEach(function(id){var e=document.getElementById(id);e.value=localStorage.getItem(key(id))||'';e.onchange=function(){saveText(id)}})
-['weekProblems','weekResult'].forEach(function(id){var e=document.getElementById(id);e.value=localStorage.getItem('term_'+id+'_week_'+weekKey())||'';e.onchange=function(){localStorage.setItem('term_'+id+'_week_'+weekKey(),e.value)}})
+['learnMath','learnOther','unclear','parentNote'].forEach(function(id){var e=document.getElementById(id);e.value=localStorage.getItem(key(id))||'';e.onchange=function(){saveText(id)}});
+['weekProblems','weekResult'].forEach(function(id){var e=document.getElementById(id);e.value=localStorage.getItem('term_'+id+'_week_'+weekKey())||'';e.onchange=function(){localStorage.setItem('term_'+id+'_week_'+weekKey(),e.value)}});
 function weekKey(){var d=new Date(now),n=d.getDay()||7;d.setDate(d.getDate()-n+1);return fmt(d)}
 function loadDailyChecks(){var v={};try{v=JSON.parse(localStorage.getItem(key('checks'))||'{}')}catch(e){v={}};document.querySelectorAll('.daily-check').forEach(function(c){c.checked=!!v[c.dataset.i];c.onchange=function(){v[c.dataset.i]=c.checked;localStorage.setItem(key('checks'),JSON.stringify(v))}})}
 var pv={};try{pv=JSON.parse(localStorage.getItem(key('parentChecks'))||'{}')}catch(e){pv={}};document.querySelectorAll('.parent-check').forEach(function(c,i){c.checked=!!pv[i];c.onchange=function(){pv[i]=c.checked;localStorage.setItem(key('parentChecks'),JSON.stringify(pv))}});
@@ -170,7 +200,8 @@ function buildReview(){
  var title=dow===3?(isQuizWeek()?'周三复盘＋隔周小测':'周三复盘＋针对性巩固'):(dow===0?'周日一周复盘':'本周问题记录');
  document.getElementById('reviewTitle').textContent=title;
  var h='';
- if(dow===3)h='<p><b>先复盘周一、周二：</b>看作业、自查记录和数学一题状态，选1—2个薄弱点。</p><ol><li>每个薄弱点做2—4道变式题。</li><li>错题要说清错误类型。</li><li>'+(isQuizWeek()?'今天安排20—30分钟小测，只测最近两周学过和错过的内容。':'本周不小测，把时间用于错题再练。')+'</li></ol>';
+ if(ds==='2026-09-16'){title='9月16日 · 小数乘法复盘';h='<p>今天先完成“今日”里的四道小数乘法题，不另外叠加小测。</p><ol><li>核对：因数共有几位小数？积是否需要补0？</li><li>用积的大小关系检查小数点；应用题检查单位和答语。</li><li>错题不抄答案，自己重做，再记录是抄数、进位、小数点、补0还是审题出错。</li></ol>';document.getElementById('reviewTitle').textContent=title}
+ else if(dow===3)h='<p><b>先复盘周一、周二：</b>看作业、自查记录和数学一题状态，选1—2个薄弱点。</p><ol><li>每个薄弱点做2—4道变式题。</li><li>错题要说清错误类型。</li><li>'+(isQuizWeek()?'今天安排20—30分钟小测，只测最近两周学过和错过的内容。':'本周不小测，把时间用于错题再练。')+'</li></ol>';
  else if(dow===0)h='<ol><li>选1—3道本周代表错题，不看答案重做。</li><li>口头总结本周各科重点。</li><li>预习下周课本，只圈问题、不抢跑。</li></ol>';
  else h='<p>平日只记录真正不会或反复出错的问题，周三集中处理。</p>';
  document.getElementById('reviewContent').innerHTML=h
